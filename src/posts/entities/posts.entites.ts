@@ -10,7 +10,22 @@ export class PostClass {
         this._image = image;
     }
 
+    changePostData(title: string, text: string, image?: string) {
+        this._title = title;
+        this._text = text;
+        this._image = image;
+    }
+
     get id() {
         return this._id;
+    }
+    get title() {
+        return this._title;
+    }
+    get text() {
+        return this._text;
+    }
+    get image() {
+        return this._image;
     }
 }

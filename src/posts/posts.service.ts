@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PostClass } from './entities/posts.entites';
 import { notFoundPostError } from './errors/posts.errors';
+import { PostDTO } from './DTO/posts.DTO';
 
 @Injectable()
 export class PostsService {
@@ -16,10 +17,10 @@ export class PostsService {
         return 'Posts online!';
     }
 
-    addNewPostService({ title, text, image }): void {
+    addNewPostService(post: PostClass): void {
         //throw new Error('Method not implemented.');
         const lastElementIndex = this.posts.length - 1;
-        this.posts.push(new PostClass(this.posts[lastElementIndex].id + 1, title, text, image))
+        this.posts.push(new PostClass(this.posts[lastElementIndex].id + 1, post.title, post.text, post.image))
     }
 
     getAllPostsService(): PostClass[] {
@@ -33,6 +34,13 @@ export class PostsService {
             throw notFoundPostError();
         }
         return postExist;
+    }
+
+    updatePostByIdService(id: number, postBody: PostClass) {
+        //throw new Error('Method not implemented.');
+        const postExist = this.getPostByIdService(id);
+        postExist.changePostData(postBody.title, postBody.text, postBody.image);
+        console.log(`Post ${id} atualizado`);
     }
 
 }
