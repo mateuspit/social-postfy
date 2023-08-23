@@ -24,4 +24,9 @@ export class PostsService {
     getAllPostsService(): PostClass[] {
         return this.posts;
     }
+
+    //getPostByIdService(): PostClass {
+    //    throw new Error('Method not implemented.');
+    //}
+
 }

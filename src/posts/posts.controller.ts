@@ -34,4 +34,9 @@ export class PostsController {
     getAllPostsController(): PostClass[] {
         return this.postsService.getAllPostsService();
     }
+
+    //@Get()
+    //getPostByIdController(@): PostClass {
+    //    return this.postsService.getPostByIdService();
+    //}
 }
