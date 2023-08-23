@@ -1,8 +1,15 @@
 import { ApplicationError } from "src/protocols";
 
-export function conflictError(): ApplicationError {
+export function conflictMediaError(): ApplicationError {
     return {
         name: "conflictError",
-        message: "Data already created!",
+        message: "Media data already created!",
+    };
+}
+
+export function notFoundMediaIError(): ApplicationError {
+    return {
+        name: "notFoundError",
+        message: "Media data not found!",
     };
 }

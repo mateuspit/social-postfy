@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
-import { conflictError } from './errors/medias.erros';
+import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 
 @Injectable()
 export class MediasService {
 
-    private medias: MediaDTO[] = [
-        new Media("instagram", "https://www.instagram.com/USERNAME"),
-        new Media("wapp", "https://www.wapp.com/USERNAME"),
-        new Media("telegram", "https://www.telegram.com/USERNAME"),
-        new Media("facebook", "https://www.facebook.com/USERNAME"),
+
+    private medias: Media[] = [
+        new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
+        new Media(2, "wapp", "https://www.wapp.com/USERNAME"),
+        new Media(3, "telegram", "https://www.telegram.com/USERNAME"),
+        new Media(4, "facebook", "https://www.facebook.com/USERNAME"),
     ]
 
     getHealthMediasService(): string {
@@ -24,16 +25,50 @@ export class MediasService {
                 (mobj.username.toLowerCase() === username.toLowerCase())) {
                 return mobj;
             }
-            else {
-                //console.log("Não")
+        })
+
+        if (!existMedia.length) {
+            return this.medias.push(new Media(this.medias.length + 1, title, username))
+        }
+        else {
+            throw conflictMediaError();
+        }
+    }
+
+    getAllMediasService(): Media[] {
+        return this.medias;
+    }
+
+    getMediaByIdService(id: number): Media {
+        const existMedia = this.medias.find((mobj) => mobj.id === id);
+        if (existMedia) {
+            return existMedia;
+        }
+        else {
+            throw notFoundMediaIError();
+            //return (new Media(77, "a", "a"));
+        }
+
+    }
+
+    updateMediaByIdService(id: number, { title, username }): Media {
+        const existMediaById = this.getMediaByIdService(id);
+        const existMedia = this.medias.filter((mobj) => {
+            if ((mobj.title.toLowerCase() === title.toLowerCase())
+                &&
+                (mobj.username.toLowerCase() === username.toLowerCase())) {
+                return mobj;
             }
         })
 
         if (!existMedia.length) {
-            return this.medias.push(new Media(title, username))
+            //existMediaById.changeTitle(title)
+            //existMediaById.changeUsername(username)
+            existMediaById.changeMediaData(title, username);
+            return existMediaById;
         }
         else {
-            throw conflictError();
+            throw conflictMediaError();
         }
     }
 }
