@@ -10,6 +10,6 @@ export function inputPostError(key: string): ApplicationError {
 export function notFoundPostError(): ApplicationError {
     return {
         name: "notFoundPostError",
-        message: `post data not found!`,
+        message: `Post data not found!`,
     };
 }

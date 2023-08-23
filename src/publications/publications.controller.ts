@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
+import { PublicationDTO } from './DTO/publications.DTO';
 
 @Controller("publications")
 export class PublicationsController {
@@ -8,5 +9,10 @@ export class PublicationsController {
     @Get("health")
     getHealthPublicationsController(): string {
         return this.publicationsService.getHealthPublicationsService();
+    }
+
+    @Post()
+    addNewPublicationController(@Body() body: PublicationDTO) {
+        this.publicationsService.addNewPublicationService(body);
     }
 }

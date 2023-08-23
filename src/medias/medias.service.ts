@@ -6,7 +6,7 @@ import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 @Injectable()
 export class MediasService {
 
-    private medias: Media[] = [
+    public medias: Media[] = [
         new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
         new Media(2, "wapp", "https://www.wapp.com/USERNAME"),
         new Media(3, "telegram", "https://www.telegram.com/USERNAME"),
