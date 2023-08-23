@@ -7,12 +7,13 @@ import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaIn
 
 @Injectable()
 export class PublicationsService {
-
     constructor(private readonly mediasService: MediasService, private readonly postsService: PostsService) { }
 
     private publications: Publication[] = [
         new Publication(1, 1, 1, new Date("2023-09-21")),
-        new Publication(2, 1, 1, new Date("2023-07-21"))
+        new Publication(2, 1, 1, new Date("2023-07-21")),
+        new Publication(57, 1, 1, new Date("2023-07-24")),
+        new Publication(4, 1, 1, new Date("2023-07-24"))
     ];
 
     getHealthPublicationsService(): string {
@@ -35,7 +36,7 @@ export class PublicationsService {
 
     getPublicationById(id: number): Publication {
         //throw new Error('Method not implemented.');
-        const publicationExists = this.publications.find(pobj => pobj._id === id);
+        const publicationExists = this.publications.find(pobj => pobj.id === id);
         if (!publicationExists) {
             throw notFoundPublicationError();
         }
@@ -45,7 +46,7 @@ export class PublicationsService {
     updatePublicationService(id: number, { mediaId, postId, date }) {//queria receber tipo Publication
         //throw new Error('Method not implemented.');
         const publicationExists = this.getPublicationById(id);
-        if (publicationExists._date < new Date()) {
+        if (publicationExists.date < new Date()) {
             throw forbiddenPublicationError();
         }
         const mediaExists = this.mediasService.getMediaByIdService(mediaId);
@@ -63,6 +64,15 @@ export class PublicationsService {
 
         console.log(`Publication ${id}: Updated data.`)
     }
+
+    deletePublicationByIdService(id: number) {
+        //throw new Error('Method not implemented.');
+        this.getPublicationById(id);
+        const publicationTargetIndex = this.publications.findIndex(pobj => pobj.id === id);
+        this.publications.splice(publicationTargetIndex, 1);
+        console.log(`Publication ${id}: Deleted data.`);
+    }
+
 
 
 }
