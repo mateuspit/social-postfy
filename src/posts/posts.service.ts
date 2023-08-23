@@ -43,4 +43,20 @@ export class PostsService {
         console.log(`Post ${id} atualizado`);
     }
 
+    deletePostByIdService(id: number) {
+        //throw new Error('Method not implemented.');
+        const postExist = this.getPostByIdService(id);
+        //FEAT
+        //
+        //ANALYSE IF MEDIA HAS PUBLICATION
+        //IF YES, ERROR 403 FORBIDDEN
+        const deletePostIndex = this.posts.findIndex(pobj => pobj.id === postExist.id)
+        //console.log(deletePostIndex, "deletePostIndex");
+        //console.log("this.posts1", this.posts);
+        //console.log("this.posts1[deletePostIndex]", this.posts[deletePostIndex]);
+        this.posts.splice((deletePostIndex), 1)
+        //console.log("this.posts2",this.posts);
+        console.log(`Post ${id} deletado`);
+    }
+
 }

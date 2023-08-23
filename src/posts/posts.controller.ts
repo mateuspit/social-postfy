@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostDTO } from './DTO/posts.DTO';
 import { inputPostError } from './errors/posts.errors';
@@ -41,8 +41,13 @@ export class PostsController {
     }
 
     @Patch(":id")
-    async updatePostById(@Param("id", ParseIntPipe) id: number, @Body() body: PostDTO): Promise<void> {
+    async updatePostByIdController(@Param("id", ParseIntPipe) id: number, @Body() body: PostDTO): Promise<void> {
         const validatedBody = await this.validatePostDTO(body);
         this.postsService.updatePostByIdService(id, validatedBody);
+    }
+
+    @Delete(":id")
+    deletePostByIdController(@Param("id", ParseIntPipe) id: number) {
+        this.postsService.deletePostByIdService(id);
     }
 }
