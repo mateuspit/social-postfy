@@ -6,7 +6,6 @@ import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 @Injectable()
 export class MediasService {
 
-
     private medias: Media[] = [
         new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
         new Media(2, "wapp", "https://www.wapp.com/USERNAME"),
@@ -70,5 +69,17 @@ export class MediasService {
         else {
             throw conflictMediaError();
         }
+    }
+
+    deleteMediaByIdService(id: number) {
+        const existMediaById = this.getMediaByIdService(id);
+        //FEAT
+        //
+        //ANALYSE IF MEDIA HAS PUBLICATION
+        //IF YES, ERROR 403 FORBIDDEN
+        const deleteIndex = this.medias.findIndex((mobj) => {
+            mobj.id === existMediaById.id
+        })
+        return this.medias.splice((deleteIndex - 1), 1)
     }
 }
