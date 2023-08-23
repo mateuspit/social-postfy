@@ -3,6 +3,7 @@ import { PublicationDTO } from './DTO/publications.DTO';
 import { Publication } from './entities/publication.entities';
 import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
+import { notFoundPublicationError } from './errors/publications.errors';
 
 @Injectable()
 export class PublicationsService {
@@ -30,4 +31,14 @@ export class PublicationsService {
         //throw new Error('Method not implemented.');
         return this.publications;
     }
+
+    getPublicationById(id: number): Publication {
+        //throw new Error('Method not implemented.');
+        const publicationExists = this.publications.find(pobj => pobj._id === id);
+        if (!publicationExists) {
+            throw notFoundPublicationError();
+        }
+        return publicationExists;
+    }
+
 }
