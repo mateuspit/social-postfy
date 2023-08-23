@@ -77,9 +77,7 @@ export class MediasService {
         //
         //ANALYSE IF MEDIA HAS PUBLICATION
         //IF YES, ERROR 403 FORBIDDEN
-        const deleteIndex = this.medias.findIndex((mobj) => {
-            mobj.id === existMediaById.id
-        })
-        return this.medias.splice((deleteIndex - 1), 1)
+        const deleteIndex = this.medias.findIndex((mobj) => mobj.id === existMediaById.id)
+        return this.medias.splice((deleteIndex), 1)
     }
 }
