@@ -3,7 +3,7 @@ import { PublicationDTO } from './DTO/publications.DTO';
 import { Publication } from './entities/publication.entities';
 import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
-import { notFoundPublicationError } from './errors/publications.errors';
+import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
 
 @Injectable()
 export class PublicationsService {
@@ -11,7 +11,8 @@ export class PublicationsService {
     constructor(private readonly mediasService: MediasService, private readonly postsService: PostsService) { }
 
     private publications: Publication[] = [
-        new Publication(1, 1, 1, new Date("2023-08-21"))
+        new Publication(1, 1, 1, new Date("2023-09-21")),
+        new Publication(2, 1, 1, new Date("2023-07-21"))
     ];
 
     getHealthPublicationsService(): string {
@@ -40,5 +41,28 @@ export class PublicationsService {
         }
         return publicationExists;
     }
+
+    updatePublicationService(id: number, { mediaId, postId, date }) {//queria receber tipo Publication
+        //throw new Error('Method not implemented.');
+        const publicationExists = this.getPublicationById(id);
+        if (publicationExists._date < new Date()) {
+            throw forbiddenPublicationError();
+        }
+        const mediaExists = this.mediasService.getMediaByIdService(mediaId);
+        if (!mediaExists) {
+            throw notFoundMediaInPublicationError();
+        }
+        const postExists = this.postsService.getPostByIdService(postId);
+        if (!postExists) {
+            throw notFoundPostInPublicationError();
+        }
+        if ((new Date(date).toString() === "Invalid Date")) {
+            throw dateInvalidPublicationError()
+        }
+        publicationExists.changePublicationData(mediaId, postId, date);
+
+        console.log(`Publication ${id}: Updated data.`)
+    }
+
 
 }

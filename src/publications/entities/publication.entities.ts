@@ -12,4 +12,9 @@ export class Publication {
     get id() {
         return this._id;
     }
+    changePublicationData(mediaId: number, postId: number, date: Date) {
+        this._mediaId = mediaId;
+        this._postId = postId;
+        this._date = date;
+    }
 }
