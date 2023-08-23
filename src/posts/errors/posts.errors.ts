@@ -1,8 +1,15 @@
 import { ApplicationError } from "src/protocols";
 
-export function inputPostError(key): ApplicationError {
+export function inputPostError(key: string): ApplicationError {
     return {
-        name: "conflictError",
+        name: "conflictPostError",
         message: `${key} in body is not allow!`,
+    };
+}
+
+export function notFoundPostError(): ApplicationError {
+    return {
+        name: "notFoundPostError",
+        message: `post data not foundI!`,
     };
 }

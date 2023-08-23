@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostClass } from './entities/posts.entites';
+import { notFoundPostError } from './errors/posts.errors';
 
 @Injectable()
 export class PostsService {
@@ -25,8 +26,13 @@ export class PostsService {
         return this.posts;
     }
 
-    //getPostByIdService(): PostClass {
-    //    throw new Error('Method not implemented.');
-    //}
+    getPostByIdService(id: number): PostClass {
+        //throw new Error('Method not implemented.');
+        const postExist = this.posts.find((pobj => pobj.id === id))
+        if (!postExist) {
+            throw notFoundPostError();
+        }
+        return postExist;
+    }
 
 }

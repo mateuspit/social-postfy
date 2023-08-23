@@ -2,7 +2,7 @@ import { ApplicationError } from "src/protocols";
 
 export function conflictMediaError(): ApplicationError {
     return {
-        name: "conflictError",
+        name: "conflictMediaError",
         message: "Media data already created!",
     };
 }

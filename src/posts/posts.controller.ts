@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostDTO } from './DTO/posts.DTO';
 import { inputPostError } from './errors/posts.errors';
@@ -35,8 +35,8 @@ export class PostsController {
         return this.postsService.getAllPostsService();
     }
 
-    //@Get()
-    //getPostByIdController(@): PostClass {
-    //    return this.postsService.getPostByIdService();
-    //}
+    @Get(":id")
+    getPostByIdController(@Param("id", ParseIntPipe) id: number): PostClass {
+        return this.postsService.getPostByIdService(id);
+    }
 }
