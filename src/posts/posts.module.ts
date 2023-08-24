@@ -6,5 +6,6 @@ import { PostsService } from './posts.service';
     imports: [],
     controllers: [PostsController],
     providers: [PostsService],
+    exports: [PostsService]
 })
 export class PostsModule { }
