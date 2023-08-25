@@ -6,3 +6,10 @@ export class ServerInputPostException extends HttpException {
         super(message, HttpStatus.BAD_REQUEST)
     }
 }
+
+export class NotFoundPostError extends HttpException {
+    constructor(id: number) {
+        const message = `Post ${id} não encontrado!`
+        super(message, HttpStatus.NOT_FOUND)
+    }
+}

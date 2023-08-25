@@ -23,4 +23,11 @@ export class PostsRepository {
         return await this.prisma.post.findMany();
     }
 
+    async getPostByIdRepository(id: number): Promise<PostDTO | null> {
+        return await this.prisma.post.findFirst({
+            where: { id }
+        })
+    }
+
+
 }

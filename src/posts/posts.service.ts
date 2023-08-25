@@ -3,6 +3,7 @@ import { PostClass } from './entities/posts.entites';
 import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PostsRepository } from './post.repository';
+import { NotFoundPostError } from './exceptions/post.exceptions';
 
 @Injectable()
 export class PostsService {
@@ -40,11 +41,18 @@ export class PostsService {
         return postsWithoutNullImages;
     }
 
-    getPostByIdService(id: number): PostClass {
-        //throw new Error('Method not implemented.');
-        const postExist = this.posts.find((pobj => pobj.id === id))
+    async getPostByIdService(id: number): Promise<PostDTO> {
+        let postExist = await this.postsRepository.getPostByIdRepository(id);
         if (!postExist) {
-            throw notFoundPostError();
+            throw new NotFoundPostError(id);
+        }
+        if (postExist.image === null) {
+            const postWithouNullImage = {
+                id: postExist.id,
+                text: postExist.text,
+                title: postExist.title
+            }
+            postExist = postWithouNullImage;
         }
         return postExist;
     }
@@ -52,7 +60,7 @@ export class PostsService {
     updatePostByIdService(id: number, postBody: PostClass) {
         //throw new Error('Method not implemented.');
         const postExist = this.getPostByIdService(id);
-        postExist.changePostData(postBody.title, postBody.text, postBody.image);
+        //postExist.changePostData(postBody.title, postBody.text, postBody.image);
         console.log(`Post ${id} atualizado`);
     }
 
@@ -63,11 +71,11 @@ export class PostsService {
         //
         //ANALYSE IF MEDIA HAS PUBLICATION
         //IF YES, ERROR 403 FORBIDDEN
-        const deletePostIndex = this.posts.findIndex(pobj => pobj.id === postExist.id)
+        //const deletePostIndex = this.posts.findIndex(pobj => pobj.id === postExist.id)
         //console.log(deletePostIndex, "deletePostIndex");
         //console.log("this.posts1", this.posts);
         //console.log("this.posts1[deletePostIndex]", this.posts[deletePostIndex]);
-        this.posts.splice((deletePostIndex), 1)
+        //this.posts.splice((deletePostIndex), 1)
         //console.log("this.posts2",this.posts);
         console.log(`Post ${id} deletado`);
     }

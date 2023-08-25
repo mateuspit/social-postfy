@@ -24,8 +24,8 @@ export class PostsController {
     }
 
     @Get(":id")
-    getPostByIdController(@Param("id", ParseIntPipe) id: number): PostClass {
-        return this.postsService.getPostByIdService(id);
+    async getPostByIdController(@Param("id", ParseIntPipe) id: number): Promise<PostDTO> {
+        return await this.postsService.getPostByIdService(id);
     }
 
     @Patch(":id")
