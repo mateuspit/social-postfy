@@ -13,8 +13,8 @@ export class PublicationsController {
     }
 
     @Post()
-    addNewPublicationController(@Body() body: PublicationDTO) {
-        this.publicationsService.addNewPublicationService(body);
+    async addNewPublicationController(@Body() body: PublicationDTO): Promise<void> {
+        await this.publicationsService.addNewPublicationService(body);
     }
 
     @Get()

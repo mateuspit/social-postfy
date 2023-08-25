@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsSemVer, IsString, Min } from "class-validator";
+import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsSemVer, IsString, Min } from "class-validator";
 
 export class PublicationDTO {
     @IsOptional()
@@ -13,6 +13,6 @@ export class PublicationDTO {
     @Min(1)
     postId: number;
     @IsNotEmpty()
-    @IsString()
+    @IsDateString()
     date: Date;
 }

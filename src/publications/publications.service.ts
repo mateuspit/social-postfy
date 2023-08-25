@@ -4,10 +4,15 @@ import { Publication } from './entities/publication.entities';
 import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
 import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
+import { PublicationsRepository } from './publications.repository';
 
 @Injectable()
 export class PublicationsService {
-    constructor(private readonly mediasService: MediasService, private readonly postsService: PostsService) { }
+    constructor(
+        private readonly mediasService: MediasService,
+        private readonly postsService: PostsService,
+        private readonly publicationRepository: PublicationsRepository
+    ) { }
 
     private publications: Publication[] = [
         new Publication(1, 1, 1, new Date("2023-09-21")),
@@ -20,13 +25,11 @@ export class PublicationsService {
         return 'Publications online!';
     }
 
-    //addNewPublicationService(body: PublicationDTO) {
-    addNewPublicationService({ mediaId, postId, date }) {
-        const lastElementIndex = this.publications.length - 1;
-        this.mediasService.getMediaByIdService(mediaId);
-        this.postsService.getPostByIdService(postId);
-        this.publications.push(new Publication(this.publications[lastElementIndex].id + 1, mediaId, postId, date));
-        console.log(`Publicação ${this.publications[lastElementIndex].id + 1} criada`);
+    async addNewPublicationService(body: PublicationDTO): Promise<void> {
+        await this.mediasService.getMediaByIdService(body.mediaId);
+        await this.postsService.getPostByIdService(body.postId);
+        const newPublication = await this.publicationRepository.addNewPublicationRepository(body);
+        console.log(`Publicação ${newPublication.id} criada`);
     }
 
     getAllPublicationsService() {
