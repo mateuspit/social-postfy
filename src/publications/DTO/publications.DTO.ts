@@ -1,6 +1,9 @@
-import { IsDate, IsNotEmpty, IsNumber, IsSemVer, IsString, Min } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsSemVer, IsString, Min } from "class-validator";
 
 export class PublicationDTO {
+    @IsOptional()
+    @IsNumber()
+    id: number;
     @IsNotEmpty()
     @IsNumber()
     @Min(1)

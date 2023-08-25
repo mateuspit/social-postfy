@@ -3,7 +3,7 @@ import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
 import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 import { MediasRepository } from './medias.repository';
-import { ConflictMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
+import { ConflictMediaException, ForbiddenMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
 
 @Injectable()
 export class MediasService {
@@ -59,8 +59,12 @@ export class MediasService {
 
     }
 
-    async deleteMediaByIdService(id: number) {
-        const existMediaById = await this.getMediaByIdService(id);
+    async deleteMediaByIdService(id: number): Promise<void> {
+        await this.getMediaByIdService(id);
+        const publicationWithThisMediaExists = await this.mediasRepository.getPublicationByMediaId(id);
+        if (publicationWithThisMediaExists) {
+            throw new ForbiddenMediaException(id, publicationWithThisMediaExists.id);
+        }
         //FEAT
         //
         //ANALYSE IF MEDIA HAS PUBLICATION

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { MediaDTO } from './DTO/medias.DTO';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ConflictMediaException, ServerMediaException } from './exceptions/medias.exceptions';
+import { NotFoundMediaIException, ServerInputMediaException as ServerInputMediaException } from './exceptions/medias.exceptions';
+import { PublicationDTO } from 'src/publications/DTO/publications.DTO';
 
 @Injectable()
 export class MediasRepository {
@@ -44,7 +45,16 @@ export class MediasRepository {
             })
         }
         catch (e) {
-            throw new ServerMediaException();
+            throw new ServerInputMediaException();
+        }
+    }
+
+    async getPublicationByMediaId(id: number): Promise<PublicationDTO | null> {
+        try {
+            return await this.prisma.publication.findFirst({ where: { mediaId: id } })
+        }
+        catch (e) {
+            throw new ServerInputMediaException();
         }
 
     }
