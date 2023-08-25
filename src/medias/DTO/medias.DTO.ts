@@ -1,16 +1,15 @@
 import { IsNotEmpty, IsString, isString } from "class-validator";
 
 export class MediaDTO {
-    id: number;
     @IsString({
-        message: "Preencha um title sendo uma string"
+        message: "Preencha um title sendo uma string!"
     })
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "title é obrigatorio!" })
     title: string;
 
     @IsString({
-        message: "Preencha um username sendo uma string"
+        message: "Preencha um username sendo uma string!"
     })
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "username é obrigatorio!" })
     username: string;
 }

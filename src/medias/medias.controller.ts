@@ -13,27 +13,27 @@ export class MediasController {
     }
 
     @Post()
-    addMediaController(@Body() body: MediaDTO) {
-        return this.mediasService.addMediaService(body);
+    async addMediaController(@Body() body: MediaDTO): Promise<void> {
+        await this.mediasService.addMediaService(body);
     }
 
     @Get()
-    getAllMediasController(): Media[] {
-        return this.mediasService.getAllMediasService();
+    async getAllMediasController(): Promise<MediaDTO[]> {
+        return await this.mediasService.getAllMediasService();
     }
 
     @Get(":id")
-    getMediaByIdController(@Param("id", ParseIntPipe) id: number): Media {
-        return this.mediasService.getMediaByIdService(id);
+    async getMediaByIdController(@Param("id", ParseIntPipe) id: number): Promise<MediaDTO> {
+        return await this.mediasService.getMediaByIdService(id);
     }
 
     @Patch(":id")
-    updateMediaByIdController(@Body() body: MediaDTO, @Param("id", ParseIntPipe) id: number): Media {
-        return this.mediasService.updateMediaByIdService(id, body);
+    async updateMediaByIdController(@Body() body: MediaDTO, @Param("id", ParseIntPipe) id: number): Promise<void> {
+        this.mediasService.updateMediaByIdService(id, body);
     }
 
     @Delete(":id")
-    deleteMediaByIdController(@Param("id", ParseIntPipe) id: number) {
-        return this.mediasService.deleteMediaByIdService(id);
+    async deleteMediaByIdController(@Param("id", ParseIntPipe) id: number): Promise<void> {
+        await this.mediasService.deleteMediaByIdService(id);
     }
 }

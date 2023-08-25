@@ -2,9 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
 import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
+import { MediasRepository } from './medias.repository';
+import { ConflictMediaException } from './exceptions/medias.exceptions';
 
 @Injectable()
 export class MediasService {
+
+    constructor(private readonly mediasRepository: MediasRepository) { }
 
     public medias: Media[] = [
         new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
@@ -17,29 +21,30 @@ export class MediasService {
         return 'Medias online!';
     }
 
-    addMediaService({ title, username }) {
-        const existMedia = this.medias.filter((mobj) => {
-            if ((mobj.title.toLowerCase() === title.toLowerCase())
-                &&
-                (mobj.username.toLowerCase() === username.toLowerCase())) {
-                return mobj;
-            }
-        })
+    async addMediaService(body: MediaDTO): Promise<void> {
+        const existMedia = await this.mediasRepository.getMediaByTitleAndUsername(body)
+        //const existMedia = this.medias.filter((mobj) => {
+        //    if ((mobj.title.toLowerCase() === body.title.toLowerCase())
+        //        &&
+        //        (mobj.username.toLowerCase() === body.username.toLowerCase())) {
+        //        return mobj;
+        //    }
+        //})
 
-        if (!existMedia.length) {
-            return this.medias.push(new Media(this.medias.length + 1, title, username))
+        if (!existMedia) {
+            await this.mediasRepository.addMediaRepository(body)
         }
         else {
-            throw conflictMediaError();
+            throw new ConflictMediaException(body.title, body.username);
         }
     }
 
-    getAllMediasService(): Media[] {
-        return this.medias;
+    async getAllMediasService(): Promise<MediaDTO[]> {
+        return await this.mediasRepository.getAllMediasRepository();
     }
 
-    getMediaByIdService(id: number): Media {
-        const existMedia = this.medias.find((mobj) => mobj.id === id);
+    async getMediaByIdService(id: number): Promise<MediaDTO | null> {
+        const existMedia = await this.mediasRepository.getMediaByIdRepository(id);
         if (existMedia) {
             return existMedia;
         }
@@ -50,8 +55,8 @@ export class MediasService {
 
     }
 
-    updateMediaByIdService(id: number, { title, username }): Media {
-        const existMediaById = this.getMediaByIdService(id);
+    async updateMediaByIdService(id: number, { title, username }) {
+        const existMediaById = await this.getMediaByIdService(id);
         const existMedia = this.medias.filter((mobj) => {
             if ((mobj.title.toLowerCase() === title.toLowerCase())
                 &&
@@ -63,7 +68,8 @@ export class MediasService {
         if (!existMedia.length) {
             //existMediaById.changeTitle(title)
             //existMediaById.changeUsername(username)
-            existMediaById.changeMediaData(title, username);
+            //existMediaById.changeMediaData(title, username);
+            await this.mediasRepository.updateMediaByIdRepository(id, title, username);
             return existMediaById;
         }
         else {
@@ -71,13 +77,12 @@ export class MediasService {
         }
     }
 
-    deleteMediaByIdService(id: number) {
-        const existMediaById = this.getMediaByIdService(id);
+    async deleteMediaByIdService(id: number) {
+        const existMediaById = await this.getMediaByIdService(id);
         //FEAT
         //
         //ANALYSE IF MEDIA HAS PUBLICATION
         //IF YES, ERROR 403 FORBIDDEN
-        const deleteIndex = this.medias.findIndex((mobj) => mobj.id === existMediaById.id)
-        return this.medias.splice((deleteIndex), 1)
+        await this.mediasRepository.deleteMediaByIdService(id);
     }
 }
