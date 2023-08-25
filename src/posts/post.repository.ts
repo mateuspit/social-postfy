@@ -37,12 +37,6 @@ export class PostsRepository {
         })
     }
 
-    async getPublicationByPostIdRepository(id: number): Promise<PublicationDTO | null> {
-        return await this.prisma.publication.findFirst({
-            where: { postId: id }
-        })
-    }
-
     async deletePostByIdRepository(id: number): Promise<void> {
         await this.prisma.post.delete({
             where: { id }

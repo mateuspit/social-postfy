@@ -18,7 +18,12 @@ export class PublicationsRepository {
         catch (e) {
             throw new ServerInputMediaException();
         }
+    }
 
+    async getPublicationByPostIdRepository(id: number): Promise<PublicationDTO | null> {
+        return await this.prisma.publication.findFirst({
+            where: { postId: id }
+        })
     }
 
 }

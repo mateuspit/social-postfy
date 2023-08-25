@@ -4,10 +4,11 @@ import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PostsRepository } from './post.repository';
 import { ForbiddenPostException, NotFoundPostError } from './exceptions/post.exceptions';
+import { PublicationsRepository } from 'src/publications/publications.repository';
 
 @Injectable()
 export class PostsService {
-    constructor(private readonly postsRepository: PostsRepository) { }
+    constructor(private readonly postsRepository: PostsRepository, private readonly publicationRepository: PublicationsRepository) { }
 
     private posts: PostClass[] = [
         new PostClass(1, "1Why you should have a guinea pig?", "1https://www.guineapigs.com/why-you-should-guinea"),
@@ -71,7 +72,7 @@ export class PostsService {
         //ANALYSE IF MEDIA HAS PUBLICATION
         //IF YES, ERROR 403 FORBIDDEN
         //preciso ver se esse id (em posts) está associado em publications (lá esse id se chama mediaId)
-        const publicationExists = await this.postsRepository.getPublicationByPostIdRepository(id);
+        const publicationExists = await this.publicationRepository.getPublicationByPostIdRepository(id);
         if (publicationExists?.postId === id) {
             throw new ForbiddenPostException(id, publicationExists.id);
         }
