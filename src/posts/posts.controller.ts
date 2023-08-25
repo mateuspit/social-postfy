@@ -34,7 +34,7 @@ export class PostsController {
     }
 
     @Delete(":id")
-    deletePostByIdController(@Param("id", ParseIntPipe) id: number) {
-        this.postsService.deletePostByIdService(id);
+    async deletePostByIdController(@Param("id", ParseIntPipe) id: number): Promise<void> {
+        await this.postsService.deletePostByIdService(id);
     }
 }

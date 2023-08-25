@@ -13,3 +13,10 @@ export class NotFoundPostError extends HttpException {
         super(message, HttpStatus.NOT_FOUND)
     }
 }
+
+export class ForbiddenPostException extends HttpException {
+    constructor(mediaId: number, publicationId: number) {
+        const message = `Post ${mediaId} não pode ser deletado pois está na publication ${publicationId}!`
+        super(message, HttpStatus.FORBIDDEN)
+    }
+}

@@ -3,7 +3,7 @@ import { PostClass } from './entities/posts.entites';
 import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PostsRepository } from './post.repository';
-import { NotFoundPostError } from './exceptions/post.exceptions';
+import { ForbiddenPostException, NotFoundPostError } from './exceptions/post.exceptions';
 
 @Injectable()
 export class PostsService {
@@ -64,19 +64,18 @@ export class PostsService {
         console.log(`Post ${id} atualizado`);
     }
 
-    deletePostByIdService(id: number) {
-        //throw new Error('Method not implemented.');
-        const postExist = this.getPostByIdService(id);
+    async deletePostByIdService(id: number): Promise<void> {
+        await this.getPostByIdService(id);
         //FEAT
         //
         //ANALYSE IF MEDIA HAS PUBLICATION
         //IF YES, ERROR 403 FORBIDDEN
-        //const deletePostIndex = this.posts.findIndex(pobj => pobj.id === postExist.id)
-        //console.log(deletePostIndex, "deletePostIndex");
-        //console.log("this.posts1", this.posts);
-        //console.log("this.posts1[deletePostIndex]", this.posts[deletePostIndex]);
-        //this.posts.splice((deletePostIndex), 1)
-        //console.log("this.posts2",this.posts);
+        //preciso ver se esse id (em posts) está associado em publications (lá esse id se chama mediaId)
+        const publicationExists = await this.postsRepository.getPublicationByPostIdRepository(id);
+        if (publicationExists?.postId === id) {
+            throw new ForbiddenPostException(id, publicationExists.id);
+        }
+        await this.postsRepository.deletePostByIdRepository(id);
         console.log(`Post ${id} deletado`);
     }
 

@@ -4,6 +4,7 @@ import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ServerInputPostException } from './exceptions/post.exceptions';
+import { PublicationDTO } from 'src/publications/DTO/publications.DTO';
 
 @Injectable()
 export class PostsRepository {
@@ -35,6 +36,19 @@ export class PostsRepository {
             data: postBody
         })
     }
+
+    async getPublicationByPostIdRepository(id: number): Promise<PublicationDTO | null> {
+        return await this.prisma.publication.findFirst({
+            where: { postId: id }
+        })
+    }
+
+    async deletePostByIdRepository(id: number): Promise<void> {
+        await this.prisma.post.delete({
+            where: { id }
+        })
+    }
+
 
 
 
