@@ -29,7 +29,7 @@ export class MediasController {
 
     @Patch(":id")
     async updateMediaByIdController(@Body() body: MediaDTO, @Param("id", ParseIntPipe) id: number): Promise<void> {
-        this.mediasService.updateMediaByIdService(id, body);
+        await this.mediasService.updateMediaByIdService(id, body);
     }
 
     @Delete(":id")

@@ -27,29 +27,25 @@ export class MediasRepository {
         });
     }
 
-    async updateMediaByIdRepository(id: number, title: string, username: string) {
+    async updateMediaByIdRepository(id: number, body: MediaDTO): Promise<void> {
         await this.prisma.media.update({
-            where: {
-                id
-            },
-            data: {
-                title,
-                username
-            }
+            where: { id },
+            data: body
         });
     }
     async deleteMediaByIdService(id: number) {
         await this.prisma.media.delete({ where: { id } });
     }
 
-    async getMediaByTitleAndUsername(body: MediaDTO) {
+    async getMediaByTitleAndUsername(body: MediaDTO): Promise<MediaDTO> {
         try {
             return await this.prisma.media.findFirst({
                 where: body
             })
         }
         catch (e) {
+            throw new ServerMediaException();
         }
-        throw new ServerMediaException();
+
     }
 }

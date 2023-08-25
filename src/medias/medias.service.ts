@@ -23,13 +23,6 @@ export class MediasService {
 
     async addMediaService(body: MediaDTO): Promise<void> {
         const existMedia = await this.mediasRepository.getMediaByTitleAndUsername(body)
-        //const existMedia = this.medias.filter((mobj) => {
-        //    if ((mobj.title.toLowerCase() === body.title.toLowerCase())
-        //        &&
-        //        (mobj.username.toLowerCase() === body.username.toLowerCase())) {
-        //        return mobj;
-        //    }
-        //})
 
         if (!existMedia) {
             await this.mediasRepository.addMediaRepository(body)
@@ -54,26 +47,16 @@ export class MediasService {
 
     }
 
-    async updateMediaByIdService(id: number, { title, username }) {
-        const existMediaById = await this.getMediaByIdService(id);
-        const existMedia = this.medias.filter((mobj) => {
-            if ((mobj.title.toLowerCase() === title.toLowerCase())
-                &&
-                (mobj.username.toLowerCase() === username.toLowerCase())) {
-                return mobj;
-            }
-        })
-
-        if (!existMedia.length) {
-            //existMediaById.changeTitle(title)
-            //existMediaById.changeUsername(username)
-            //existMediaById.changeMediaData(title, username);
-            await this.mediasRepository.updateMediaByIdRepository(id, title, username);
-            return existMediaById;
+    async updateMediaByIdService(id: number, body: MediaDTO): Promise<void> {
+        await this.getMediaByIdService(id);
+        const existMedia = await this.mediasRepository.getMediaByTitleAndUsername(body);
+        if (!existMedia) {
+            await this.mediasRepository.updateMediaByIdRepository(id, body);
         }
         else {
-            throw conflictMediaError();
+            throw new ConflictMediaException(body.title, body.username);
         }
+
     }
 
     async deleteMediaByIdService(id: number) {
