@@ -30,8 +30,7 @@ export class PostsController {
 
     @Patch(":id")
     async updatePostByIdController(@Param("id", ParseIntPipe) id: number, @Body() body: PostDTO): Promise<void> {
-        //const validatedBody = await this.validatePostDTO(body);
-        //this.postsService.updatePostByIdService(id, validatedBody);
+        await this.postsService.updatePostByIdService(id, body)
     }
 
     @Delete(":id")

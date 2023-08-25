@@ -57,10 +57,10 @@ export class PostsService {
         return postExist;
     }
 
-    updatePostByIdService(id: number, postBody: PostClass) {
-        //throw new Error('Method not implemented.');
-        const postExist = this.getPostByIdService(id);
-        //postExist.changePostData(postBody.title, postBody.text, postBody.image);
+    async updatePostByIdService(id: number, postBody: PostDTO): Promise<void> {
+        await this.getPostByIdService(id);
+        await this.postsRepository.updatePostByIdRepository(id, postBody);
+
         console.log(`Post ${id} atualizado`);
     }
 

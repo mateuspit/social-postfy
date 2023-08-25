@@ -29,5 +29,13 @@ export class PostsRepository {
         })
     }
 
+    async updatePostByIdRepository(id: number, postBody: PostDTO): Promise<void> {
+        await this.prisma.post.update({
+            where: { id },
+            data: postBody
+        })
+    }
+
+
 
 }
