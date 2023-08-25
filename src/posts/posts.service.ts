@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PostClass } from './entities/posts.entites';
 import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
+import { PostsRepository } from './post.repository';
 
 @Injectable()
 export class PostsService {
+    constructor(private readonly postsRepository: PostsRepository) { }
 
     private posts: PostClass[] = [
         new PostClass(1, "1Why you should have a guinea pig?", "1https://www.guineapigs.com/why-you-should-guinea"),
@@ -17,10 +19,8 @@ export class PostsService {
         return 'Posts online!';
     }
 
-    addNewPostService(post: PostClass): void {
-        //throw new Error('Method not implemented.');
-        const lastElementIndex = this.posts.length - 1;
-        this.posts.push(new PostClass(this.posts[lastElementIndex].id + 1, post.title, post.text, post.image))
+    async addNewPostService(body: PostDTO): Promise<void> {
+        await this.postsRepository.addNewPostRepository(body);
     }
 
     getAllPostsService(): PostClass[] {

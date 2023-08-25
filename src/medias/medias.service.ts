@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
-import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 import { MediasRepository } from './medias.repository';
 import { ConflictMediaException, ForbiddenMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
 

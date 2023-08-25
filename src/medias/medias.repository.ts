@@ -16,7 +16,6 @@ export class MediasRepository {
     }
 
     async getAllMediasRepository(): Promise<MediaDTO[]> {
-        //throw new Error('Method not implemented.');
         return await this.prisma.media.findMany();
     }
 

@@ -15,19 +15,7 @@ export class PostsController {
 
     @Post()
     async addNewPostController(@Body() body: PostDTO): Promise<void> {
-        const validatedBody = await this.validatePostDTO(body);
-        this.postsService.addNewPostService(validatedBody);
-    }
-
-    private async validatePostDTO(body: any): Promise<PostClass> {
-        const allowedKeys = ["title", "text", "image"];
-        const receivedKeys = Object.keys(body);
-        for (const key of receivedKeys) {
-            if (!allowedKeys.includes(key)) {
-                throw inputPostError(key); //error 422 Unprocessable Entity
-            }
-        }
-        return body;
+        await this.postsService.addNewPostService(body);
     }
 
     @Get()
@@ -42,8 +30,8 @@ export class PostsController {
 
     @Patch(":id")
     async updatePostByIdController(@Param("id", ParseIntPipe) id: number, @Body() body: PostDTO): Promise<void> {
-        const validatedBody = await this.validatePostDTO(body);
-        this.postsService.updatePostByIdService(id, validatedBody);
+        //const validatedBody = await this.validatePostDTO(body);
+        //this.postsService.updatePostByIdService(id, validatedBody);
     }
 
     @Delete(":id")
