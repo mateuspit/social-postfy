@@ -3,11 +3,12 @@ import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
 import { MediasRepository } from './medias.repository';
 import { ConflictMediaException, ForbiddenMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
+import { PublicationsRepository } from 'src/publications/publications.repository';
 
 @Injectable()
 export class MediasService {
 
-    constructor(private readonly mediasRepository: MediasRepository) { }
+    constructor(private readonly mediasRepository: MediasRepository, private readonly publicationsRepository: PublicationsRepository) { }
 
     public medias: Media[] = [
         new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
@@ -60,7 +61,7 @@ export class MediasService {
 
     async deleteMediaByIdService(id: number): Promise<void> {
         await this.getMediaByIdService(id);
-        const publicationWithThisMediaExists = await this.mediasRepository.getPublicationByMediaId(id);
+        const publicationWithThisMediaExists = await this.publicationsRepository.getPublicationByMediaId(id);
         if (publicationWithThisMediaExists) {
             throw new ForbiddenMediaException(id, publicationWithThisMediaExists.id);
         }
