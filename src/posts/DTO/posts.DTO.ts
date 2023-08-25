@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from "class-validator";
 
 export class PostDTO {
+    @IsNumber()
+    @IsOptional()
+    id: number;
+
     @IsString({ message: "Preencha o title, deve ser uma string" })
     @IsNotEmpty({ message: "Preencha o title, obrigatorio" })
     title: string;
@@ -11,5 +15,5 @@ export class PostDTO {
 
     @IsUrl()
     @IsOptional()
-    image: string;
+    image?: string;
 }

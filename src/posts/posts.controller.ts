@@ -19,8 +19,8 @@ export class PostsController {
     }
 
     @Get()
-    getAllPostsController(): PostClass[] {
-        return this.postsService.getAllPostsService();
+    async getAllPostsController(): Promise<PostDTO[]> {
+        return await this.postsService.getAllPostsService();
     }
 
     @Get(":id")

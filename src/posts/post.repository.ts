@@ -7,6 +7,7 @@ import { ServerInputPostException } from './exceptions/post.exceptions';
 
 @Injectable()
 export class PostsRepository {
+
     constructor(private readonly prisma: PrismaService) { }
 
     async addNewPostRepository(body: PostDTO): Promise<void> {
@@ -16,6 +17,10 @@ export class PostsRepository {
         catch (e) {
             throw new ServerInputPostException();
         }
+    }
+
+    async getAllPostsRepository(): Promise<PostDTO[]> {
+        return await this.prisma.post.findMany();
     }
 
 }

@@ -23,8 +23,21 @@ export class PostsService {
         await this.postsRepository.addNewPostRepository(body);
     }
 
-    getAllPostsService(): PostClass[] {
-        return this.posts;
+    async getAllPostsService(): Promise<PostDTO[]> {
+        const postsWithNullImages = await this.postsRepository.getAllPostsRepository();
+
+        const postsWithoutNullImages: PostDTO[] = postsWithNullImages.map((pobj) => {
+            if (pobj.image === null) {
+                const objWithoutImage = {
+                    id: pobj.id,
+                    title: pobj.title,
+                    text: pobj.text
+                }
+                return objWithoutImage;
+            }
+            return pobj;
+        });
+        return postsWithoutNullImages;
     }
 
     getPostByIdService(id: number): PostClass {
