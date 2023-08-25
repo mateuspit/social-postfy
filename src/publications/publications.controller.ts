@@ -18,8 +18,8 @@ export class PublicationsController {
     }
 
     @Get()
-    getAllPublicationsController(): Publication[] {
-        return this.publicationsService.getAllPublicationsService();
+    async getAllPublicationsController(): Promise<PublicationDTO[]> {
+        return await this.publicationsService.getAllPublicationsService();
     }
 
     @Get(":id")

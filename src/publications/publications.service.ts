@@ -32,9 +32,8 @@ export class PublicationsService {
         console.log(`Publicação ${newPublication.id} criada`);
     }
 
-    getAllPublicationsService() {
-        //throw new Error('Method not implemented.');
-        return this.publications;
+    async getAllPublicationsService(): Promise<PublicationDTO[]> {
+        return await this.publicationRepository.getAllPublicationRepository();
     }
 
     getPublicationById(id: number): Publication {

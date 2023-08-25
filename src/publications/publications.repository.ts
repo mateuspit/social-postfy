@@ -37,4 +37,9 @@ export class PublicationsRepository {
         }
     }
 
+    async getAllPublicationRepository(): Promise<PublicationDTO[]> {
+        return await this.prisma.publication.findMany();
+    }
+
+
 }
