@@ -13,3 +13,10 @@ export class ServerMediaException extends HttpException {
         super(message, HttpStatus.BAD_REQUEST)
     }
 }
+
+export class NotFoundMediaIException extends HttpException {
+    constructor(id: number) {
+        let message = `Media ${id} não encontrado`
+        super(message, HttpStatus.NOT_FOUND)
+    }
+}

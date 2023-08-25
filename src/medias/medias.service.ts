@@ -3,7 +3,7 @@ import { MediaDTO } from './DTO/medias.DTO';
 import { Media } from './entities/medias.entities';
 import { conflictMediaError, notFoundMediaIError } from './errors/medias.erros';
 import { MediasRepository } from './medias.repository';
-import { ConflictMediaException } from './exceptions/medias.exceptions';
+import { ConflictMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
 
 @Injectable()
 export class MediasService {
@@ -49,8 +49,7 @@ export class MediasService {
             return existMedia;
         }
         else {
-            throw notFoundMediaIError();
-            //return (new Media(77, "a", "a"));
+            throw new NotFoundMediaIException(id);
         }
 
     }
