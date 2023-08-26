@@ -17,6 +17,8 @@ model Publication {
     postId  Int
     Post    Post     @relation(fields: [postId], references: [id])
     date    DateTime
+
+    @@map("publications")
 }
 
 model Media {

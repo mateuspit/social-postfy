@@ -1,24 +1,65 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { describe } from 'node:test';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
+let app: INestApplication;
+let prisma: PrismaService;
 
-  beforeEach(async () => {
+beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+        imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await app.init();
-  });
+    app.useGlobalPipes(new ValidationPipe());
+    prisma = app.get(PrismaService);
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
+    await prisma.media.deleteMany();
+    await prisma.post.deleteMany();
+    await prisma.publication.deleteMany();
+
+    await app.init();
+});
+
+describe('AppController (e2e)', () => {
+    it('GET /health => should get an alive message from app', async () => {
+        const { status, text } = await request(app.getHttpServer())
+            .get('/health')
+        expect(status).toBe(HttpStatus.OK);
+        expect(text).toBe("App online!");
+    });
+
+    describe("/medias integration tests", () => {
+        it("GET /health => should get an alive message from medias", async () => {
+            const { status, text } = await request(app.getHttpServer())
+                .get("/medias/health")
+            expect(status).toBe(HttpStatus.OK);
+            expect(text).toBe("Medias online!")
+        });
+    });
+
+    describe("/posts integration tests", () => {
+        it("GET /health => should get an alive message from posts", async () => {
+            const { status, text } = await request(app.getHttpServer())
+                .get("/posts/health")
+            expect(status).toBe(HttpStatus.OK);
+            expect(text).toBe("Posts online!")
+        });
+    });
+
+    describe("/publications integration tests", () => {
+        it("GET /health => should get an alive message from publications", async () => {
+            const { status, text } = await request(app.getHttpServer())
+                .get("/publications/health")
+            expect(status).toBe(HttpStatus.OK);
+            expect(text).toBe("Publications online!")
+        });
+    });
+
+
+
+
 });
