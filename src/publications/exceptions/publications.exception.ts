@@ -20,3 +20,17 @@ export class NotFoundPublicationException extends HttpException {
         super(message, HttpStatus.NOT_FOUND);
     }
 }
+
+export class ForbiddenPublicationException extends HttpException {
+    constructor(id: number) {
+        const message = `Publicação ${id} já publicada!`;
+        super(message, HttpStatus.FORBIDDEN);
+    }
+}
+
+export class ForbiddenDatePublicationException extends HttpException {
+    constructor(date: Date) {
+        const message = `${date} já passou!`;
+        super(message, HttpStatus.FORBIDDEN);
+    }
+}

@@ -5,7 +5,7 @@ import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
 import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
 import { PublicationsRepository } from './publications.repository';
-import { InputFilterPublicationException, NotFoundPublicationException } from './exceptions/publications.exception';
+import { ForbiddenDatePublicationException, ForbiddenPublicationException, InputFilterPublicationException, NotFoundPublicationException } from './exceptions/publications.exception';
 
 @Injectable()
 export class PublicationsService {
@@ -53,24 +53,18 @@ export class PublicationsService {
         return publicationExists;
     }
 
-    updatePublicationService(id: number, { mediaId, postId, date }) {//queria receber tipo Publication
-        //throw new Error('Method not implemented.');
-        const publicationExists = this.getPublicationById(id);
-        //if (publicationExists.date < new Date()) {
-        //    throw forbiddenPublicationError();
-        //}
-        const mediaExists = this.mediasService.getMediaByIdService(mediaId);
-        if (!mediaExists) {
-            throw notFoundMediaInPublicationError();
+    async updatePublicationService(id: number, body: PublicationDTO): Promise<void> {
+        const publicationExits = await this.getPublicationById(id);
+        if (new Date(body.date) < new Date()) {
+            throw new ForbiddenDatePublicationException(body.date);
         }
-        const postExists = this.postsService.getPostByIdService(postId);
-        if (!postExists) {
-            throw notFoundPostInPublicationError();
+        if (new Date(publicationExits.date) < new Date()) {
+            throw new ForbiddenPublicationException(id);
         }
-        if ((new Date(date).toString() === "Invalid Date")) {
-            throw dateInvalidPublicationError()
-        }
-        //publicationExists.changePublicationData(mediaId, postId, date);
+        await this.mediasService.getMediaByIdService(body.mediaId);
+        await this.postsService.getPostByIdService(body.postId);
+
+        await this.publicationRepository.updatePublicationRepository(id, body);
 
         console.log(`Publication ${id}: Updated data.`)
     }

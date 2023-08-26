@@ -97,6 +97,18 @@ export class PublicationsRepository {
         })
     }
 
+    async updatePublicationRepository(id: number, body: PublicationDTO): Promise<void> {
+        await this.prisma.publication.update({
+            where: { id },
+            data: {
+                mediaId: body.mediaId,
+                postId: body.postId,
+                date: new Date(body.date)
+            }
+        })
+    }
+
+
 
 
 }

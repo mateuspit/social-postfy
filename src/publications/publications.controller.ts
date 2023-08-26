@@ -29,8 +29,8 @@ export class PublicationsController {
     }
 
     @Patch(":id")
-    updatePublicationController(@Param("id", ParseIntPipe) id: number, @Body() body: PublicationDTO) {
-        this.publicationsService.updatePublicationService(id, body);
+    async updatePublicationController(@Param("id", ParseIntPipe) id: number, @Body() body: PublicationDTO): Promise<void> {
+        await this.publicationsService.updatePublicationService(id, body);
     }
 
     @Delete(":id")
