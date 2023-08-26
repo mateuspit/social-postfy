@@ -13,3 +13,10 @@ export class InputFilterPublicationException extends HttpException {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }
+
+export class NotFoundPublicationException extends HttpException {
+    constructor(id: number) {
+        const message = `Publicação ${id} não encontrada!`;
+        super(message, HttpStatus.NOT_FOUND);
+    }
+}

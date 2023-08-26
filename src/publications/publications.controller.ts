@@ -24,8 +24,8 @@ export class PublicationsController {
     }
 
     @Get(":id")
-    getPublicationByIdController(@Param("id", ParseIntPipe) id: number): Publication {
-        return this.publicationsService.getPublicationById(id);
+    async getPublicationByIdController(@Param("id", ParseIntPipe) id: number): Promise<PublicationDTO> {
+        return await this.publicationsService.getPublicationById(id);
     }
 
     @Patch(":id")

@@ -5,7 +5,7 @@ import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
 import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
 import { PublicationsRepository } from './publications.repository';
-import { InputFilterPublicationException } from './exceptions/publications.exception';
+import { InputFilterPublicationException, NotFoundPublicationException } from './exceptions/publications.exception';
 
 @Injectable()
 export class PublicationsService {
@@ -44,11 +44,11 @@ export class PublicationsService {
         return await this.publicationRepository.getAllPublicationRepository(booleanInput, after);
     }
 
-    getPublicationById(id: number): Publication {
+    async getPublicationById(id: number): Promise<PublicationDTO> {
         //throw new Error('Method not implemented.');
-        const publicationExists = this.publications.find(pobj => pobj.id === id);
+        const publicationExists = await this.publicationRepository.getPublicationByIdRepository(id);
         if (!publicationExists) {
-            throw notFoundPublicationError();
+            throw new NotFoundPublicationException(id);
         }
         return publicationExists;
     }
@@ -56,9 +56,9 @@ export class PublicationsService {
     updatePublicationService(id: number, { mediaId, postId, date }) {//queria receber tipo Publication
         //throw new Error('Method not implemented.');
         const publicationExists = this.getPublicationById(id);
-        if (publicationExists.date < new Date()) {
-            throw forbiddenPublicationError();
-        }
+        //if (publicationExists.date < new Date()) {
+        //    throw forbiddenPublicationError();
+        //}
         const mediaExists = this.mediasService.getMediaByIdService(mediaId);
         if (!mediaExists) {
             throw notFoundMediaInPublicationError();
@@ -70,7 +70,7 @@ export class PublicationsService {
         if ((new Date(date).toString() === "Invalid Date")) {
             throw dateInvalidPublicationError()
         }
-        publicationExists.changePublicationData(mediaId, postId, date);
+        //publicationExists.changePublicationData(mediaId, postId, date);
 
         console.log(`Publication ${id}: Updated data.`)
     }

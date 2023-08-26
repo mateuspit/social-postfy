@@ -89,5 +89,14 @@ export class PublicationsRepository {
         }
     }
 
+    async getPublicationByIdRepository(id: number): Promise<PublicationDTO> {
+        return await this.prisma.publication.findFirst({
+            where: {
+                id: id
+            }
+        })
+    }
+
+
 
 }
