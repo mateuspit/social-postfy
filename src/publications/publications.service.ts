@@ -69,11 +69,10 @@ export class PublicationsService {
         console.log(`Publication ${id}: Updated data.`)
     }
 
-    deletePublicationByIdService(id: number) {
-        //throw new Error('Method not implemented.');
-        this.getPublicationById(id);
-        const publicationTargetIndex = this.publications.findIndex(pobj => pobj.id === id);
-        this.publications.splice(publicationTargetIndex, 1);
+    async deletePublicationByIdService(id: number): Promise<void> {
+        await this.getPublicationById(id);
+
+        await this.publicationRepository.deletePublicationByIdRepository(id);
         console.log(`Publication ${id}: Deleted data.`);
     }
 

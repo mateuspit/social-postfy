@@ -108,7 +108,11 @@ export class PublicationsRepository {
         })
     }
 
-
-
-
+    async deletePublicationByIdRepository(id: number) {
+        await this.prisma.publication.delete({
+            where: {
+                id
+            }
+        })
+    }
 }

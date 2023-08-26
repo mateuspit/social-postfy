@@ -34,7 +34,7 @@ export class PublicationsController {
     }
 
     @Delete(":id")
-    deletePublicationByIdController(@Param("id", ParseIntPipe) id: number) {
-        this.publicationsService.deletePublicationByIdService(id);
+    async deletePublicationByIdController(@Param("id", ParseIntPipe) id: number): Promise<void> {
+        await this.publicationsService.deletePublicationByIdService(id);
     }
 }
