@@ -37,8 +37,56 @@ export class PublicationsRepository {
         }
     }
 
-    async getAllPublicationRepository(): Promise<PublicationDTO[]> {
-        return await this.prisma.publication.findMany();
+    async getAllPublicationRepository(publish?: boolean, after?: Date): Promise<PublicationDTO[]> {
+        if (publish === true && after) {
+            return await this.prisma.publication.findMany({
+                where: {
+                    date: {
+                        lt: new Date(),
+                        ...({ gt: new Date(after) }),
+                    }
+                }
+            })
+        }
+        else if (publish === false && after) {
+            return await this.prisma.publication.findMany({
+                where: {
+                    date: {
+                        gt: new Date(after) > new Date() ? new Date(after) : new Date(),
+                    }
+                }
+            })
+        }
+        else if (publish === true) {
+            return await this.prisma.publication.findMany({
+                where: {
+                    date: {
+                        lt: new Date()
+                    }
+                }
+            })
+        }
+        else if (publish === false) {
+            return await this.prisma.publication.findMany({
+                where: {
+                    date: {
+                        gt: new Date()
+                    }
+                }
+            })
+        }
+        else if (after) {
+            return await this.prisma.publication.findMany({
+                where: {
+                    date: {
+                        gt: new Date(after)
+                    }
+                }
+            })
+        }
+        else {
+            return await this.prisma.publication.findMany();
+        }
     }
 
 

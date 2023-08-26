@@ -6,3 +6,10 @@ export class ServerInputPublicationException extends HttpException {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }
+
+export class InputFilterPublicationException extends HttpException {
+    constructor() {
+        const message = `Filtro(s) em formato(s) incorreto(s)!`;
+        super(message, HttpStatus.BAD_REQUEST);
+    }
+}

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { PublicationDTO } from './DTO/publications.DTO';
 import { Publication } from './entities/publication.entities';
@@ -18,8 +18,9 @@ export class PublicationsController {
     }
 
     @Get()
-    async getAllPublicationsController(): Promise<PublicationDTO[]> {
-        return await this.publicationsService.getAllPublicationsService();
+    //async getAllPublicationsController(@Query("published") published?: boolean, @Query("after") after?: Date): Promise<PublicationDTO[]> {
+    async getAllPublicationsController(@Query("published") published: string = null, @Query("after") after: Date = null): Promise<PublicationDTO[]> {
+        return await this.publicationsService.getAllPublicationsService(published, after);
     }
 
     @Get(":id")

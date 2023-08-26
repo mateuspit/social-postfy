@@ -5,6 +5,7 @@ import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
 import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
 import { PublicationsRepository } from './publications.repository';
+import { InputFilterPublicationException } from './exceptions/publications.exception';
 
 @Injectable()
 export class PublicationsService {
@@ -32,8 +33,15 @@ export class PublicationsService {
         console.log(`Publicação ${newPublication.id} criada`);
     }
 
-    async getAllPublicationsService(): Promise<PublicationDTO[]> {
-        return await this.publicationRepository.getAllPublicationRepository();
+    async getAllPublicationsService(publish?: string, after?: Date): Promise<PublicationDTO[]> {
+        if (publish !== null && publish !== "true" && publish !== "false") {
+            throw new InputFilterPublicationException();
+        }
+        if ((new Date(after).toString() === "Invalid Date")) {
+            throw new InputFilterPublicationException();
+        }
+        const booleanInput = JSON.parse(publish);
+        return await this.publicationRepository.getAllPublicationRepository(booleanInput, after);
     }
 
     getPublicationById(id: number): Publication {
