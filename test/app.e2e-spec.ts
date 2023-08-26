@@ -40,7 +40,7 @@ describe('AppController (e2e)', () => {
             expect(text).toBe("Medias online!")
         });
 
-        it("POST /medias => should create a media data", async () => {
+        it("POST /medias => should create a media data; status code 200", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
                 .post("/medias")
@@ -342,6 +342,281 @@ describe('AppController (e2e)', () => {
             const { status } = await request(app.getHttpServer())
                 .get(`/medias/${lastMediaInDB.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("PUT /medias/:id =>  should update a media data; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "title string",
+                    username: "username string"
+                });
+            expect(status).toBe(HttpStatus.OK);
+        });
+
+        it("PUT /medias/:id =>  should return 404 id media not found", async () => {
+            await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+
+            const lastMediaInDB = await prisma.media.findFirst({
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            });
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${lastMediaInDB.id + 10}`)
+                .send({
+                    title: "title string",
+                    username: "username string"
+                });
+            expect(status).toBe(HttpStatus.NOT_FOUND)
+        });
+
+        it("PUT /medias/:id => should return status code 400 title missing", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    username: "string username"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 username missing", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 strange keys in body object", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string title",
+                    username: "string username",
+                    strange: "strange"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 title need to be a string", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+
+            const responseNumber = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: 0,
+                    username: "string username"
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: true,
+                    username: "string username"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: false,
+                    username: "string username"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: [],
+                    username: "string username"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: {},
+                    username: "string username"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: undefined,
+                    username: "string username"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: null,
+                    username: "string username"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 username need to be a string", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+
+            const responseNumber = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: 0
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: true
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: false
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: []
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: {}
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: undefined
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string username",
+                    username: null
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 title empty", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "",
+                    username: "string username"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should return status code 400 username empty", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "Instagram",
+                    username: "myusername",
+                }
+            });
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send({
+                    title: "string usernam",
+                    username: ""
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /medias/:id => should be unique return status code 409", async () => {
+            //const response = await request(app.getHttpServer())
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const updateBody = {
+                title: "string title",
+                username: "string username"
+            }
+
+            console.log(newMedia.id);
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/medias/${newMedia.id}`)
+                .send(updateBody);
+            expect(status).toBe(HttpStatus.CONFLICT);
         });
     });
 
