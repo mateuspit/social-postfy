@@ -17,9 +17,9 @@ beforeEach(async () => {
     app.useGlobalPipes(new ValidationPipe());
     prisma = app.get(PrismaService);
 
+    await prisma.publication.deleteMany();
     await prisma.media.deleteMany();
     await prisma.post.deleteMany();
-    await prisma.publication.deleteMany();
 
     await app.init();
 });
@@ -617,6 +617,97 @@ describe('AppController (e2e)', () => {
                 .patch(`/medias/${newMedia.id}`)
                 .send(updateBody);
             expect(status).toBe(HttpStatus.CONFLICT);
+        });
+
+        it("DELETE /media/:id => should delete id media data; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/medias/${newMedia.id}`);
+
+            const mediaExists = await prisma.media.findFirst({
+                where: { id: newMedia.id }
+            })
+
+            expect(mediaExists).toBe(null);
+            expect(status).toBe(HttpStatus.OK);
+        });
+
+        it("DELETE /media/:id => should return 404 not found media", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/medias/${newMedia.id + 10}`);
+
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("DELETE /media/:id => should return 403 Forbidden media attachet to a published publication", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("2023-08-20")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/medias/${newMedia.id}`);
+
+            expect(status).toBe(HttpStatus.FORBIDDEN);
+        });
+
+        it("DELETE /media/:id => should return 403 Forbidden media attachet to a future publication", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("2040-08-20")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/medias/${newMedia.id}`);
+
+            expect(status).toBe(HttpStatus.FORBIDDEN);
         });
     });
 
