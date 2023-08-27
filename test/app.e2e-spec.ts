@@ -1311,7 +1311,94 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        //it()
+        it("DELETE /posts/:id => should delete id post data; status code 200", async () => {
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "oi",
+                    text: "sim"
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/posts/${newPost.id}`);
+            expect(status).toBe(HttpStatus.OK);
+
+            const postExists = await prisma.post.findFirst({
+                where: { id: newPost.id }
+            })
+            expect(postExists).toBe(null);
+        });
+
+        it("DELETE /posts/:id => should return 404 not found post", async () => {
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "oi",
+                    text: "sim"
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/posts/${newPost.id + 10}`);
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("DELETE /posts/:id => should return 403 Forbidden post attachet to a published publication", async () => {
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "oi",
+                    text: "sim"
+                }
+            })
+
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "oi",
+                    username: "sim"
+                }
+            })
+
+            await prisma.publication.create({
+                data: {
+                    postId: newPost.id,
+                    mediaId: newMedia.id,
+                    date: new Date("2000-05-05")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/posts/${newPost.id}`)
+
+            expect(status).toBe(HttpStatus.FORBIDDEN);
+        });
+
+        it("DELETE /posts/:id => should return 403 Forbidden post attachet to a future publication", async () => {
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "oi",
+                    text: "sim"
+                }
+            })
+
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "oi",
+                    username: "sim"
+                }
+            })
+
+            await prisma.publication.create({
+                data: {
+                    postId: newPost.id,
+                    mediaId: newMedia.id,
+                    date: new Date("2050-05-05")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/posts/${newPost.id}`)
+
+            expect(status).toBe(HttpStatus.FORBIDDEN);
+        });
     });
 
     describe("/publications integration tests", () => {
