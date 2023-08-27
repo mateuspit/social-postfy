@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PostClass } from './entities/posts.entites';
-import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ServerInputPostException } from './exceptions/post.exceptions';
-import { PublicationDTO } from 'src/publications/DTO/publications.DTO';
 
 @Injectable()
 export class PostsRepository {

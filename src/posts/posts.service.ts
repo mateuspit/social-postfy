@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PostClass } from './entities/posts.entites';
-import { notFoundPostError } from './errors/posts.errors';
 import { PostDTO } from './DTO/posts.DTO';
 import { PostsRepository } from './post.repository';
 import { ForbiddenPostException, NotFoundPostError } from './exceptions/post.exceptions';
@@ -9,13 +7,6 @@ import { PublicationsRepository } from 'src/publications/publications.repository
 @Injectable()
 export class PostsService {
     constructor(private readonly postsRepository: PostsRepository, private readonly publicationRepository: PublicationsRepository) { }
-
-    private posts: PostClass[] = [
-        new PostClass(1, "1Why you should have a guinea pig?", "1https://www.guineapigs.com/why-you-should-guinea"),
-        new PostClass(2, "2Why you should have a guinea pig?", "2https://www.guineapigs.com/why-you-should-guinea", "https://picsum.photos/200"),
-        new PostClass(3, "3Why you should have a guinea pig?", "3https://www.guineapigs.com/why-you-should-guinea"),
-        new PostClass(4, "4Why you should have a guinea pig?", "4https://www.guineapigs.com/why-you-should-guinea", "https://picsum.photos/200")
-    ]
 
     getHealthPostsService(): string {
         return 'Posts online!';

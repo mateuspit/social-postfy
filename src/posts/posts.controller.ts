@@ -1,8 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostDTO } from './DTO/posts.DTO';
-import { inputPostError } from './errors/posts.errors';
-import { PostClass } from './entities/posts.entites';
 
 @Controller("posts")
 export class PostsController {

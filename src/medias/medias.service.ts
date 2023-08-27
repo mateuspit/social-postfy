@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { MediaDTO } from './DTO/medias.DTO';
-import { Media } from './entities/medias.entities';
 import { MediasRepository } from './medias.repository';
 import { ConflictMediaException, ForbiddenMediaException, NotFoundMediaIException } from './exceptions/medias.exceptions';
 import { PublicationsRepository } from 'src/publications/publications.repository';
@@ -9,13 +8,6 @@ import { PublicationsRepository } from 'src/publications/publications.repository
 export class MediasService {
 
     constructor(private readonly mediasRepository: MediasRepository, private readonly publicationsRepository: PublicationsRepository) { }
-
-    public medias: Media[] = [
-        new Media(1, "instagram", "https://www.instagram.com/USERNAME"),
-        new Media(2, "wapp", "https://www.wapp.com/USERNAME"),
-        new Media(3, "telegram", "https://www.telegram.com/USERNAME"),
-        new Media(4, "facebook", "https://www.facebook.com/USERNAME"),
-    ]
 
     getHealthMediasService(): string {
         return 'Medias online!';

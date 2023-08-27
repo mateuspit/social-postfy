@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { MediasService } from './medias.service';
-import { Media } from './entities/medias.entities';
 import { MediaDTO } from './DTO/medias.DTO';
 
 @Controller("medias")

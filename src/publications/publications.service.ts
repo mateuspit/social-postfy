@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PublicationDTO } from './DTO/publications.DTO';
-import { Publication } from './entities/publication.entities';
 import { MediasService } from 'src/medias/medias.service';
 import { PostsService } from 'src/posts/posts.service';
-import { dateInvalidPublicationError, forbiddenPublicationError, notFoundMediaInPublicationError, notFoundPostInPublicationError, notFoundPublicationError } from './errors/publications.errors';
 import { PublicationsRepository } from './publications.repository';
 import { ForbiddenDatePublicationException, ForbiddenPublicationException, InputFilterPublicationException, NotFoundPublicationException } from './exceptions/publications.exception';
 
@@ -14,13 +12,6 @@ export class PublicationsService {
         private readonly postsService: PostsService,
         private readonly publicationRepository: PublicationsRepository
     ) { }
-
-    private publications: Publication[] = [
-        new Publication(1, 1, 1, new Date("2023-09-21")),
-        new Publication(2, 1, 1, new Date("2023-07-21")),
-        new Publication(57, 1, 1, new Date("2023-07-24")),
-        new Publication(4, 1, 1, new Date("2023-07-24"))
-    ];
 
     getHealthPublicationsService(): string {
         return 'Publications online!';
