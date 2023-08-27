@@ -611,8 +611,6 @@ describe('AppController (e2e)', () => {
                 username: "string username"
             }
 
-            console.log(newMedia.id);
-
             const { status } = await request(app.getHttpServer())
                 .patch(`/medias/${newMedia.id}`)
                 .send(updateBody);
@@ -940,7 +938,7 @@ describe('AppController (e2e)', () => {
         });
 
         it("GET /posts => should return an array post data when with data; status code 200", async () => {
-            const newPost = prisma.post.createMany({
+            prisma.post.createMany({
                 data: [
                     {
                         title: "Instagram",
@@ -959,9 +957,61 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
             for (const posts of body) {
-                expect(posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && posts.hasOwnProperty("image")).toBe(true);
-                expect(!!posts.image ? Object.keys(posts).length === 4 : Object.keys(posts).length === 3).toBe(true);
+                const logicWithImage = posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && posts.hasOwnProperty('image');
+                const logicWithoutImage = posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && !posts.hasOwnProperty('image');
+                expect(logicWithImage || logicWithoutImage).toBe(true);
             }
+        });
+
+        it("GET /posts => should return an empty array when without data; status code 200", async () => {
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/posts`);
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true);
+            expect(body.length).toBe(0)
+
+        });
+
+        it("GET /posts/:id => should return status code 404 when post by id not found", async () => {
+            await prisma.post.create({
+                data: {
+                    title: "Instagram",
+                    text: "myusername",
+                }
+            })
+
+            const lastPostInDB = await prisma.post.findFirst({
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            });
+
+            const { status } = await request(app.getHttpServer())
+                .get(`/posts/${lastPostInDB.id + 10}`);
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("GET /posts/:id => should return status an object with post by id", async () => {
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "Instagram",
+                    text: "myusername",
+                }
+            });
+
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/posts/${newPost.id}`);
+            expect(status).toBe(HttpStatus.OK);
+            expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
+            const logicWithImage = newPost.hasOwnProperty('id') && newPost.hasOwnProperty('title') && newPost.hasOwnProperty('text') && newPost.hasOwnProperty('image');
+            const logicWithoutImage = newPost.hasOwnProperty('id') && newPost.hasOwnProperty('title') && newPost.hasOwnProperty('text') && !newPost.hasOwnProperty('image');
+
+            expect(logicWithImage || logicWithoutImage).toBe(true);
+
+            expect(!!newPost.id ? Object.keys(newPost).length === 4 : Object.keys(newPost).length === 3).toBe(true);
         });
     });
 
