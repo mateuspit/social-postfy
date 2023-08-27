@@ -1804,7 +1804,7 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publcations => should return an array post data when with data without filters; status code 200", async () => {
+        it("GET /publucations => should return an array post data when with data without filters; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1844,7 +1844,7 @@ describe('AppController (e2e)', () => {
             }
         });
 
-        it("GET /publcations => should return an empty array when without data; status code 200", async () => {
+        it("GET /publucations => should return an empty array when without data; status code 200", async () => {
             const { status, body } = await request(app.getHttpServer())
                 .get(`/publications/`);
 
@@ -1853,8 +1853,8 @@ describe('AppController (e2e)', () => {
             expect(body.length === 0).toBe(true);
         });
 
-        //it("GET /publcations => should return status code 400 published need to be a string 'true' or 'false'", async () => {
-        it("GET /publcations/?published=true => should return an array post data when with data; status code 200", async () => {
+        //it("GET /publucations => should return status code 400 published need to be a string 'true' or 'false'", async () => {
+        it("GET /publucations/?published=true => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1901,7 +1901,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it("GET /publcations/?published=false => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?published=false => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1948,7 +1948,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it("GET /publcations/?published=wrongInput => should return status code 400 must be just 'true' or 'false'", async () => {
+        it("GET /publucations/?published=wrongInput => should return status code 400 must be just 'true' or 'false'", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1986,7 +1986,7 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publcations/?after=27/08/3050 => should return status code 400 must be YYYY-MM-DD", async () => {
+        it("GET /publucations/?after=27/08/3050 => should return status code 400 must be YYYY-MM-DD", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2031,7 +2031,7 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publcations/?published=wrongInput&after=27/08/3050 => should return status code 400 must be just 'true' or 'false'", async () => {
+        it("GET /publucations/?published=wrongInput&after=27/08/3050 => should return status code 400 must be just 'true' or 'false'", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2073,7 +2073,7 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publcations/?after=oldDate => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=oldDate => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2125,7 +2125,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 3).toBe(true);
         });
 
-        it("GET /publcations/?after=today => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=today => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2177,7 +2177,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it("GET /publcations/?after=future => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=future => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2234,7 +2234,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it(`GET /publcations/?published=true&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2286,7 +2286,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publcations/?published=true&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=today => should return an array post data when with data with filter; status code 200`, async () => {
 
             const newMedia = await prisma.media.create({
                 data: {
@@ -2339,7 +2339,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 0).toBe(true);
         });
 
-        it(`GET /publcations/?published=true&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=future => should return an array post data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2391,7 +2391,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 0).toBe(true);
         });
 
-        it(`GET /publcations/?published=false&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2448,7 +2448,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publcations/?published=false&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=today => should return an array post data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2504,7 +2504,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publcations/?published=false&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=future => should return an array post data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2558,6 +2558,65 @@ describe('AppController (e2e)', () => {
                     .toBe(true);
             }
             expect(body.length === 1).toBe(true);
+        });
+
+        it(`GET /publications/:id => should return status code 404 when post by id not found`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                }
+            })
+            const { status } = await request(app.getHttpServer())
+                .get(`/publications/${newPublication.id + 10}`);
+
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it(`GET /publications/:id => should return an object by id when publication found`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                }
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/${newPublication.id}`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
+            expect(Object.keys(body).length === 4).toBe(true);
+            expect(body.hasOwnProperty('id') && body.hasOwnProperty('mediaId') && body.hasOwnProperty('postId') && body.hasOwnProperty('date')).toBe(true)
         });
 
 
