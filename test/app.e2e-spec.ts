@@ -1429,11 +1429,373 @@ describe('AppController (e2e)', () => {
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: "2023-08-21"
+                    date: "2029-08-21"
                 });
-            console.log("text", text)
             expect(status).toBe(HttpStatus.CREATED);
-        })
+        });
+
+        it("POST /publications => should return status code 400 mediaId missing", async () => {
+            await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications => should return status code 400 postId missing", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    date: "2029-08-21"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications => should return status code 400 date missing", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications => should return status code 400 date empty", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: ""
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications/ => should return status code 400 date need to be a string", async () => {
+            //const response = await request(app.getHttpServer())
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const responseNumber = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: 0
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: true
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: false
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: []
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: {}
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: undefined
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: null
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications/ => should return status code 400 mediaId need to be a number", async () => {
+            //const response = await request(app.getHttpServer())
+            await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const responseString = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: "newMedia.id",
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: true,
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: false,
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: [],
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: {},
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: undefined,
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: null,
+                    postId: newPost.id,
+                    date: "2029-08-21"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications/ => should return status code 400 postId need to be a number", async () => {
+            //const response = await request(app.getHttpServer())
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const responseString = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: "newPost.id",
+                    date: "2029-08-21"
+                });
+            expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: true,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: false,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: [],
+                    date: "2029-08-21"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: {},
+                    date: "2029-08-21"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: undefined,
+                    date: "2029-08-21"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: null,
+                    date: "2029-08-21"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /publications => should return status code 400 strange keys in body object", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: "2029-08-21",
+                    strange: null
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
 
 
     });
