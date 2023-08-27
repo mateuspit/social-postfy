@@ -33,6 +33,7 @@ export class PublicationsRepository {
             return await this.prisma.publication.create({ data: body })
         }
         catch (e) {
+            console.log("e.message", e.message)
             throw new ServerInputPublicationException;
         }
     }

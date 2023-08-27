@@ -1408,6 +1408,34 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.OK);
             expect(text).toBe("Publications online!")
         });
+
+        it("POST /publications => should create a post data without image; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const { status, text } = await request(app.getHttpServer())
+                .post(`/publications`)
+                .send({
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: "2023-08-21"
+                });
+            console.log("text", text)
+            expect(status).toBe(HttpStatus.CREATED);
+        })
+
+
     });
 
 

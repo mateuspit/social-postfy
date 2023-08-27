@@ -29,6 +29,10 @@ export class PublicationsService {
     async addNewPublicationService(body: PublicationDTO): Promise<void> {
         await this.mediasService.getMediaByIdService(body.mediaId);
         await this.postsService.getPostByIdService(body.postId);
+        body.date = new Date(body.date);
+        if (body.date < new Date()) {
+            throw new ForbiddenDatePublicationException(body.date);
+        }
         const newPublication = await this.publicationRepository.addNewPublicationRepository(body);
         console.log(`Publicação ${newPublication.id} criada`);
     }
