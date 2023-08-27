@@ -714,9 +714,254 @@ describe('AppController (e2e)', () => {
     describe("/posts integration tests", () => {
         it("GET /health => should get an alive message from posts", async () => {
             const { status, text } = await request(app.getHttpServer())
-                .get("/posts/health")
+                .get("/posts/health");
             expect(status).toBe(HttpStatus.OK);
             expect(text).toBe("Posts online!")
+        });
+
+        it("POST /posts => should create a post data without image; status code 200", async () => {
+            const postBody = {
+                title: "string title",
+                text: "string text"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.CREATED);
+        });
+
+        it("POST /posts => should create a post data with image; status code 200", async () => {
+            const postBody = {
+                title: "string title",
+                text: "string text",
+                image: "https://picsum.photos/200"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.CREATED);
+        });
+
+        it("POST /posts => should return status code 400 title missing", async () => {
+            const postBody = {
+                text: "string text",
+                image: "https://picsum.photos/200"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 text missing", async () => {
+            const postBody = {
+                title: "string title",
+                image: "https://picsum.photos/200"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 title empty", async () => {
+            const postBody = {
+                title: "",
+                text: "string text",
+                image: "https://picsum.photos/200"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 text empty", async () => {
+            const postBody = {
+                title: "string title",
+                text: "",
+                image: "https://picsum.photos/200"
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 image must be a URL", async () => {
+            const postBody = {
+                title: "string title",
+                text: "string text",
+                image: ""
+            }
+
+            const { status } = await request(app.getHttpServer())
+                .post(`/posts`)
+                .send(postBody);
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 title need to be a string", async () => {
+            //const response = await request(app.getHttpServer())
+
+            const responseNumber = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: 0,
+                    text: "string username"
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: true,
+                    text: "string username"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: false,
+                    text: "string username"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: [],
+                    text: "string username"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: {},
+                    text: "string username"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: undefined,
+                    text: "string username"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: null,
+                    text: "string username"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 text need to be a string", async () => {
+            //const response = await request(app.getHttpServer())
+
+            const responseNumber = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: 0
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: true
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: false
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: []
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: {}
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: undefined
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string username",
+                    text: null
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("POST /posts => should return status code 400 strange keys in body object", async () => {
+            //const response = await request(app.getHttpServer())
+            const { status } = await request(app.getHttpServer())
+                .post("/posts")
+                .send({
+                    title: "string title",
+                    text: "string username",
+                    strange: "strange"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("GET /posts => should return an array post data when with data; status code 200", async () => {
+            const newPost = prisma.post.createMany({
+                data: [
+                    {
+                        title: "Instagram",
+                        text: "myusername",
+                    },
+                    {
+                        title: "Twitter",
+                        text: "myusername",
+                        image: "https://picsum.photos/200"
+                    },
+                ],
+            })
+
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/posts`);
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true);
+            for (const posts of body) {
+                expect(posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && posts.hasOwnProperty("image")).toBe(true);
+                expect(!!posts.image ? Object.keys(posts).length === 4 : Object.keys(posts).length === 3).toBe(true);
+            }
         });
     });
 
