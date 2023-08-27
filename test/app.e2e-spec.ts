@@ -3364,7 +3364,61 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
+        it(`DELETE /publications/:id => should delete a publucation data by id`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
 
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/publications/${newPublication.id}`);
+            expect(status).toBe(HttpStatus.OK)
+        });
+
+        it(`DELETE /publications/:id => should return status code 404 when publication by id not found`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .delete(`/publications/${newPublication.id + 10}`);
+            expect(status).toBe(HttpStatus.NOT_FOUND)
+        });
     });
 
 
