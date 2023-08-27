@@ -1402,6 +1402,13 @@ describe('AppController (e2e)', () => {
     });
 
     describe("/publications integration tests", () => {
+        const date = new Date();
+
+        const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0'); // Garante que tenha dois dígitos
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Lembre-se que os meses são indexados de 0 a 11
+
+        const today = `${year}-${month}-${day}`;
         it("GET /health => should get an alive message from publications", async () => {
             const { status, text } = await request(app.getHttpServer())
                 .get("/publications/health")
@@ -1847,7 +1854,7 @@ describe('AppController (e2e)', () => {
         });
 
         //it("GET /publcations => should return status code 400 published need to be a string 'true' or 'false'", async () => {
-        it("GET /publcations/?published=true => should return an array post data when with data with filter published true; status code 200", async () => {
+        it("GET /publcations/?published=true => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1871,7 +1878,7 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date()
+                    date: new Date(today)
                 },
                 {
                     mediaId: newMedia.id,
@@ -1894,7 +1901,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it("GET /publcations/?published=false => should return an array post data when with data with filter published false; status code 200", async () => {
+        it("GET /publcations/?published=false => should return an array post data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1918,7 +1925,7 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date()
+                    date: new Date(today)
                 },
                 {
                     mediaId: newMedia.id,
@@ -1928,6 +1935,618 @@ describe('AppController (e2e)', () => {
             })
             const { status, body } = await request(app.getHttpServer())
                 .get(`/publications/?published=false`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 1).toBe(true);
+        });
+
+        it("GET /publcations/?published=wrongInput => should return status code 400 must be just 'true' or 'false'", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                }]
+            })
+            const { status } = await request(app.getHttpServer())
+                .get(`/publications/?published=wrongInput`);
+
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("GET /publcations/?after=27/08/3050 => should return status code 400 must be YYYY-MM-DD", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?after=27/08/3050`);
+
+            console.log("body", body)
+
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("GET /publcations/?published=wrongInput&after=27/08/3050 => should return status code 400 must be just 'true' or 'false'", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                }, {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                }]
+            })
+            const { status } = await request(app.getHttpServer())
+                .get(`/publications/?published=wrongInput&after=27/08/3050`);
+
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("GET /publcations/?after=oldDate => should return an array post data when with data; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?after=1550-05-05`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 3).toBe(true);
+        });
+
+        it("GET /publcations/?after=today => should return an array post data when with data; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?after=${new Date(today)}`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 1).toBe(true);
+        });
+
+        it("GET /publcations/?after=future => should return an array post data when with data; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?after=3050-05-05`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 1).toBe(true);
+        });
+
+        it(`GET /publcations/?published=true&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=true&after=1550-05-05`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 2).toBe(true);
+        });
+
+        it(`GET /publcations/?published=true&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=true&after=${new Date(today)}`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 0).toBe(true);
+        });
+
+        it(`GET /publcations/?published=true&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=true&after=2500-08-27`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 0).toBe(true);
+        });
+
+        it(`GET /publcations/?published=false&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=false&after=1550-05-05`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 2).toBe(true);
+        });
+
+        it(`GET /publcations/?published=false&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                }, {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=false&after=${new Date(today)}`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 2).toBe(true);
+        });
+
+        it(`GET /publcations/?published=false&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3100-05-05")
+                }, {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(today)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1600-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=false&after=3050-05-05`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
