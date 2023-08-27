@@ -31,10 +31,15 @@ export class PostsRepository {
     }
 
     async updatePostByIdRepository(id: number, postBody: PostDTO): Promise<void> {
-        await this.prisma.post.update({
-            where: { id },
-            data: postBody
-        })
+        try {
+            await this.prisma.post.update({
+                where: { id },
+                data: postBody
+            })
+        }
+        catch {
+            throw new ServerInputPostException();
+        }
     }
 
     async deletePostByIdRepository(id: number): Promise<void> {
