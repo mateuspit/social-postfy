@@ -67,7 +67,7 @@ export class PublicationsService {
         }
         await this.mediasService.getMediaByIdService(body.mediaId);
         await this.postsService.getPostByIdService(body.postId);
-
+        body.date = new Date(body.date)
         await this.publicationRepository.updatePublicationRepository(id, body);
 
         console.log(`Publication ${id}: Updated data.`)

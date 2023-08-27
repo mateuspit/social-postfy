@@ -1416,7 +1416,7 @@ describe('AppController (e2e)', () => {
             expect(text).toBe("Publications online!")
         });
 
-        it("POST /publications => should create a post data without image; status code 200", async () => {
+        it("POST /publications => should create a publication data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1854,7 +1854,7 @@ describe('AppController (e2e)', () => {
         });
 
         //it("GET /publucations => should return status code 400 published need to be a string 'true' or 'false'", async () => {
-        it("GET /publucations/?published=true => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?published=true => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -1901,7 +1901,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it("GET /publucations/?published=false => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?published=false => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2073,7 +2073,7 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publucations/?after=oldDate => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=oldDate => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2125,7 +2125,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 3).toBe(true);
         });
 
-        it("GET /publucations/?after=today => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=today => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2177,7 +2177,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it("GET /publucations/?after=future => should return an array post data when with data; status code 200", async () => {
+        it("GET /publucations/?after=future => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2234,7 +2234,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it(`GET /publucations/?published=true&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2286,7 +2286,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publucations/?published=true&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=today => should return an array publucation data when with data with filter; status code 200`, async () => {
 
             const newMedia = await prisma.media.create({
                 data: {
@@ -2339,7 +2339,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 0).toBe(true);
         });
 
-        it(`GET /publucations/?published=true&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=true&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2391,7 +2391,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 0).toBe(true);
         });
 
-        it(`GET /publucations/?published=false&after=oldDate => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2448,7 +2448,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publucations/?published=false&after=today => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=today => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2504,7 +2504,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 2).toBe(true);
         });
 
-        it(`GET /publucations/?published=false&after=future => should return an array post data when with data with filter; status code 200`, async () => {
+        it(`GET /publucations/?published=false&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2560,7 +2560,7 @@ describe('AppController (e2e)', () => {
             expect(body.length === 1).toBe(true);
         });
 
-        it(`GET /publications/:id => should return status code 404 when post by id not found`, async () => {
+        it(`GET /publications/:id => should return status code 404 when publucation by id not found`, async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2617,6 +2617,751 @@ describe('AppController (e2e)', () => {
             expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
             expect(Object.keys(body).length === 4).toBe(true);
             expect(body.hasOwnProperty('id') && body.hasOwnProperty('mediaId') && body.hasOwnProperty('postId') && body.hasOwnProperty('date')).toBe(true)
+        });
+
+        it("PUT /publications/:id => should update a publication data by id; status code 200", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: new Date(newPublication.date.setDate(newPublication.date.getDate() + 10))
+                });
+            expect(status).toBe(HttpStatus.OK);
+        });
+
+        it("PUT /publications/:id => should return status code 403 publication published", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: new Date()
+                });
+            expect(status).toBe(HttpStatus.FORBIDDEN);
+        });
+
+        it("PUT /publications/:id => should return status code 404 mediaId data not found", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id + 10,
+                    postId: newPost2.id,
+                    date: new Date(newPublication.date.setDate(newPublication.date.getDate() + 10))
+                });
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("PUT /publications/:id => should return status code 404 postId data not found", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id + 10,
+                    date: new Date(newPublication.date.setDate(newPublication.date.getDate() + 10))
+                });
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("PUT /publications/:id => should return status code 404 when publication by id not found", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id + 10}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: new Date(newPublication.date.setDate(newPublication.date.getDate() + 10))
+                });
+            expect(status).toBe(HttpStatus.NOT_FOUND);
+        });
+
+        it("PUT /publications/:id => should return status code 400 mediaId missing", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    postId: newPost2.id,
+                    date: newPublication.date.setDate(newPublication.date.getDate() + 10)
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id => should return status code 400 postId missing", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    date: "2029-08-21"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id => should return status code 400 date missing", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id => should return status code 400 date empty", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: ""
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id/ => should return status code 400 date need to be a string", async () => {
+            //const response = await request(app.getHttpServer())
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const responseNumber = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: 0
+                });
+            expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: true
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: false
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: []
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: {}
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: undefined
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: null
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id/ => should return status code 400 mediaId need to be a number", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const responseString = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: "newMedia.id",
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: true,
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: false,
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: [],
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: {},
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: undefined,
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: null,
+                    postId: newPost2.id,
+                    date: "2029-08-21"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id/ => should return status code 400 postId need to be a number", async () => {
+            //const response = await request(app.getHttpServer())
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const responseString = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: "newPost.id",
+                    date: "2029-08-21"
+                });
+            expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanTrue = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: true,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseBooleanFalse = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: false,
+                    date: "2029-08-21"
+                });
+            expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseArray = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: [],
+                    date: "2029-08-21"
+                });
+            expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseObject = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: {},
+                    date: "2029-08-21"
+                });
+            expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseUndefined = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: undefined,
+                    date: "2029-08-21"
+                });
+            expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
+
+            const responseNull = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: null,
+                    date: "2029-08-21"
+                });
+            expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("PUT /publications/:id => should return status code 400 strange keys in body object", async () => {
+            const newMedia1 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newMedia2 = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost1 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPost2 = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            const newPublication = await prisma.publication.create({
+                data: {
+                    mediaId: newMedia1.id,
+                    postId: newPost1.id,
+                    date: new Date("3000-08-08")
+                }
+            })
+
+            const { status } = await request(app.getHttpServer())
+                .patch(`/publications/${newPublication.id}`)
+                .send({
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: "2029-08-21",
+                    strange: "loucura"
+                });
+            expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
 

@@ -99,14 +99,15 @@ export class PublicationsRepository {
     }
 
     async updatePublicationRepository(id: number, body: PublicationDTO): Promise<void> {
-        await this.prisma.publication.update({
-            where: { id },
-            data: {
-                mediaId: body.mediaId,
-                postId: body.postId,
-                date: new Date(body.date)
-            }
-        })
+        try {
+            await this.prisma.publication.update({
+                where: { id },
+                data: body
+            })
+        }
+        catch (e) {
+            throw new ServerInputPublicationException();
+        }
     }
 
     async deletePublicationByIdRepository(id: number) {
