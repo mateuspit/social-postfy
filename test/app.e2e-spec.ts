@@ -11,7 +11,7 @@ let prisma: PrismaService;
 beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
-    }).compile();
+    }).overrideProvider(PrismaService).useValue(prisma).compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
@@ -1795,6 +1795,150 @@ describe('AppController (e2e)', () => {
                     strange: null
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
+        });
+
+        it("GET /publcations => should return an array post data when with data without filters; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("2029-05-05")
+                }, {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("2029-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+        });
+
+        it("GET /publcations => should return an empty array when without data; status code 200", async () => {
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true);
+            expect(body.length === 0).toBe(true);
+        });
+
+        //it("GET /publcations => should return status code 400 published need to be a string 'true' or 'false'", async () => {
+        it("GET /publcations/?published=true => should return an array post data when with data with filter published true; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date()
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=true`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 2).toBe(true);
+        });
+
+        it("GET /publcations/?published=false => should return an array post data when with data with filter published false; status code 200", async () => {
+            const newMedia = await prisma.media.create({
+                data: {
+                    title: "string title",
+                    username: "string username"
+                }
+            })
+
+            const newPost = await prisma.post.create({
+                data: {
+                    title: "string title",
+                    text: "string text"
+                }
+            })
+
+            await prisma.publication.createMany({
+                data: [{
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("3000-05-05")
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date()
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date("1500-05-05")
+                }]
+            })
+            const { status, body } = await request(app.getHttpServer())
+                .get(`/publications/?published=false`);
+
+            expect(status).toBe(HttpStatus.OK);
+            expect(Array.isArray(body)).toBe(true)
+            for (const publication of body) {
+                expect(publication.hasOwnProperty('id') &&
+                    publication.hasOwnProperty('mediaId') &&
+                    publication.hasOwnProperty('postId') &&
+                    publication.hasOwnProperty('date'))
+                    .toBe(true);
+            }
+            expect(body.length === 1).toBe(true);
         });
 
 
