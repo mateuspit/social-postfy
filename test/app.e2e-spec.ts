@@ -32,10 +32,12 @@ describe('AppController (e2e)', () => {
         expect(text).toBe("App online!");
     });
 
+    const mediasRoute = `/medias/`;
+    const mediasHealthRoute = `/medias/health`;
     describe("/medias integration tests", () => {
         it("GET /health => should get an alive message from medias", async () => {
             const { status, text } = await request(app.getHttpServer())
-                .get("/medias/health");
+                .get(`${mediasHealthRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(text).toBe("Medias online!")
         });
@@ -43,7 +45,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should create a media data; status code 200", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string title",
                     username: "string username"
@@ -63,7 +65,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should return status code 400 title missing", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     username: "string username"
                 });
@@ -73,7 +75,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should return status code 400 username missing", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username"
                 });
@@ -83,7 +85,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should return status code 400 strange keys in body object", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string title",
                     username: "string username",
@@ -96,7 +98,7 @@ describe('AppController (e2e)', () => {
             //const response = await request(app.getHttpServer())
 
             const responseNumber = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: 0,
                     username: "string username"
@@ -104,7 +106,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: true,
                     username: "string username"
@@ -112,7 +114,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: false,
                     username: "string username"
@@ -120,7 +122,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: [],
                     username: "string username"
@@ -128,7 +130,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: {},
                     username: "string username"
@@ -136,7 +138,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: undefined,
                     username: "string username"
@@ -144,7 +146,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: null,
                     username: "string username"
@@ -156,7 +158,7 @@ describe('AppController (e2e)', () => {
             //const response = await request(app.getHttpServer())
 
             const responseNumber = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: 0
@@ -164,7 +166,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: true
@@ -172,7 +174,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: false
@@ -180,7 +182,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: []
@@ -188,7 +190,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: {}
@@ -196,7 +198,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: undefined
@@ -204,7 +206,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string username",
                     username: null
@@ -215,7 +217,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should return status code 400 title empty", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "",
                     username: "string username"
@@ -226,7 +228,7 @@ describe('AppController (e2e)', () => {
         it("POST /medias => should return status code 400 username empty", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string usernam",
                     username: ""
@@ -244,7 +246,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .post("/medias")
+                .post(`${mediasRoute}`)
                 .send({
                     title: "string title",
                     username: "string username"
@@ -267,7 +269,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status, body } = await request(app.getHttpServer())
-                .get("/medias");
+                .get(`${mediasRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
 
@@ -288,7 +290,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status, body } = await request(app.getHttpServer())
-                .get("/medias");
+                .get(`${mediasRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
 
@@ -300,7 +302,7 @@ describe('AppController (e2e)', () => {
 
         it("GET /medias => should return an empty array when without data; status code 200", async () => {
             const { status, body } = await request(app.getHttpServer())
-                .get("/medias");
+                .get(`${mediasRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
             expect(body.length).toBe(0);
@@ -315,7 +317,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status, body } = await request(app.getHttpServer())
-                .get(`/medias/${newMedia.id}`);
+                .get(`${mediasRoute}${newMedia.id}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
             expect(body.hasOwnProperty('id') && body.hasOwnProperty('title') && body.hasOwnProperty('username')).toBe(true);
@@ -340,7 +342,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status } = await request(app.getHttpServer())
-                .get(`/medias/${lastMediaInDB.id + 10}`);
+                .get(`${mediasRoute}${lastMediaInDB.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
 
@@ -353,7 +355,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "title string",
                     username: "username string"
@@ -379,7 +381,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${lastMediaInDB.id + 10}`)
+                .patch(`${mediasRoute}${lastMediaInDB.id + 10}`)
                 .send({
                     title: "title string",
                     username: "username string"
@@ -396,7 +398,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     username: "string username"
                 });
@@ -411,7 +413,7 @@ describe('AppController (e2e)', () => {
                 }
             });
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username"
                 });
@@ -426,7 +428,7 @@ describe('AppController (e2e)', () => {
                 }
             });
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string title",
                     username: "string username",
@@ -444,7 +446,7 @@ describe('AppController (e2e)', () => {
             });
 
             const responseNumber = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: 0,
                     username: "string username"
@@ -452,7 +454,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: true,
                     username: "string username"
@@ -460,7 +462,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: false,
                     username: "string username"
@@ -468,7 +470,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: [],
                     username: "string username"
@@ -476,7 +478,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: {},
                     username: "string username"
@@ -484,7 +486,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: undefined,
                     username: "string username"
@@ -492,7 +494,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: null,
                     username: "string username"
@@ -509,7 +511,7 @@ describe('AppController (e2e)', () => {
             });
 
             const responseNumber = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: 0
@@ -517,7 +519,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: true
@@ -525,7 +527,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: false
@@ -533,7 +535,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: []
@@ -541,7 +543,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: {}
@@ -549,7 +551,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: undefined
@@ -557,7 +559,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string username",
                     username: null
@@ -573,7 +575,7 @@ describe('AppController (e2e)', () => {
                 }
             });
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "",
                     username: "string username"
@@ -589,7 +591,7 @@ describe('AppController (e2e)', () => {
                 }
             });
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send({
                     title: "string usernam",
                     username: ""
@@ -612,7 +614,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/medias/${newMedia.id}`)
+                .patch(`${mediasRoute}${newMedia.id}`)
                 .send(updateBody);
             expect(status).toBe(HttpStatus.CONFLICT);
         });
@@ -626,7 +628,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/medias/${newMedia.id}`);
+                .delete(`${mediasRoute}${newMedia.id}`);
 
             const mediaExists = await prisma.media.findFirst({
                 where: { id: newMedia.id }
@@ -645,7 +647,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/medias/${newMedia.id + 10}`);
+                .delete(`${mediasRoute}${newMedia.id + 10}`);
 
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
@@ -674,7 +676,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/medias/${newMedia.id}`);
+                .delete(`${mediasRoute}${newMedia.id}`);
 
             expect(status).toBe(HttpStatus.FORBIDDEN);
         });
@@ -703,16 +705,18 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/medias/${newMedia.id}`);
+                .delete(`${mediasRoute}${newMedia.id}`);
 
             expect(status).toBe(HttpStatus.FORBIDDEN);
         });
     });
 
+    const postsRoute = `/posts/`;
+    const postsHealthRoute = `/posts/health`;
     describe("/posts integration tests", () => {
         it("GET /health => should get an alive message from posts", async () => {
             const { status, text } = await request(app.getHttpServer())
-                .get("/posts/health");
+                .get(`${postsHealthRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(text).toBe("Posts online!")
         });
@@ -724,7 +728,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.CREATED);
         });
@@ -737,7 +741,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.CREATED);
         });
@@ -749,7 +753,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -761,7 +765,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -774,7 +778,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -787,7 +791,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -800,7 +804,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .post(`/posts`)
+                .post(`${postsRoute}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -809,7 +813,7 @@ describe('AppController (e2e)', () => {
             //const response = await request(app.getHttpServer())
 
             const responseNumber = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: 0,
                     text: "string username"
@@ -817,7 +821,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: true,
                     text: "string username"
@@ -825,7 +829,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: false,
                     text: "string username"
@@ -833,7 +837,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: [],
                     text: "string username"
@@ -841,7 +845,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: {},
                     text: "string username"
@@ -849,7 +853,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: undefined,
                     text: "string username"
@@ -857,7 +861,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: null,
                     text: "string username"
@@ -869,7 +873,7 @@ describe('AppController (e2e)', () => {
             //const response = await request(app.getHttpServer())
 
             const responseNumber = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: 0
@@ -877,7 +881,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: true
@@ -885,7 +889,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: false
@@ -893,7 +897,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: []
@@ -901,7 +905,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: {}
@@ -909,7 +913,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: undefined
@@ -917,7 +921,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string username",
                     text: null
@@ -928,7 +932,7 @@ describe('AppController (e2e)', () => {
         it("POST /posts => should return status code 400 strange keys in body object", async () => {
             //const response = await request(app.getHttpServer())
             const { status } = await request(app.getHttpServer())
-                .post("/posts")
+                .post(`${postsRoute}`)
                 .send({
                     title: "string title",
                     text: "string username",
@@ -953,7 +957,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status, body } = await request(app.getHttpServer())
-                .get(`/posts`);
+                .get(`${postsRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
             for (const posts of body) {
@@ -965,7 +969,7 @@ describe('AppController (e2e)', () => {
 
         it("GET /posts => should return an empty array when without data; status code 200", async () => {
             const { status, body } = await request(app.getHttpServer())
-                .get(`/posts`);
+                .get(`${postsRoute}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
             expect(body.length).toBe(0)
@@ -990,7 +994,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status } = await request(app.getHttpServer())
-                .get(`/posts/${lastPostInDB.id + 10}`);
+                .get(`${postsRoute}${lastPostInDB.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
 
@@ -1003,7 +1007,7 @@ describe('AppController (e2e)', () => {
             });
 
             const { status, body } = await request(app.getHttpServer())
-                .get(`/posts/${newPost.id}`);
+                .get(`${postsRoute}${newPost.id}`);
             expect(status).toBe(HttpStatus.OK);
             expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
             const logicWithImage = newPost.hasOwnProperty('id') && newPost.hasOwnProperty('title') && newPost.hasOwnProperty('text') && newPost.hasOwnProperty('image');
@@ -1028,7 +1032,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.OK);
         });
@@ -1049,7 +1053,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.OK);
         });
@@ -1069,7 +1073,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1089,7 +1093,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1110,7 +1114,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost}`)
+                .patch(`${postsRoute}${newPost}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1131,7 +1135,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1152,7 +1156,7 @@ describe('AppController (e2e)', () => {
             }
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send(postBody);
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1168,7 +1172,7 @@ describe('AppController (e2e)', () => {
             })
 
             const responseNumber = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: 0,
                     text: "string username"
@@ -1176,7 +1180,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: true,
                     text: "string username"
@@ -1184,7 +1188,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: false,
                     text: "string username"
@@ -1192,7 +1196,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: [],
                     text: "string username"
@@ -1200,7 +1204,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: {},
                     text: "string username"
@@ -1208,7 +1212,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: undefined,
                     text: "string username"
@@ -1216,7 +1220,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: null,
                     text: "string username"
@@ -1235,7 +1239,7 @@ describe('AppController (e2e)', () => {
             })
 
             const responseNumber = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: 0
@@ -1243,7 +1247,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: true
@@ -1251,7 +1255,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: false
@@ -1259,7 +1263,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: []
@@ -1267,7 +1271,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: {}
@@ -1275,7 +1279,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: undefined
@@ -1283,7 +1287,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string username",
                     text: null
@@ -1302,7 +1306,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/posts/${newPost.id}`)
+                .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: "string title",
                     text: "string username",
@@ -1320,7 +1324,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/posts/${newPost.id}`);
+                .delete(`${postsRoute}${newPost.id}`);
             expect(status).toBe(HttpStatus.OK);
 
             const postExists = await prisma.post.findFirst({
@@ -1338,7 +1342,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/posts/${newPost.id + 10}`);
+                .delete(`${postsRoute}${newPost.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
 
@@ -1366,7 +1370,7 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/posts/${newPost.id}`)
+                .delete(`${postsRoute}${newPost.id}`)
 
             expect(status).toBe(HttpStatus.FORBIDDEN);
         });
@@ -1395,23 +1399,40 @@ describe('AppController (e2e)', () => {
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/posts/${newPost.id}`)
+                .delete(`${postsRoute}${newPost.id}`)
 
             expect(status).toBe(HttpStatus.FORBIDDEN);
         });
     });
 
+    const publicationsRoute = `/publications/`;
+    const publicationsHealthRoute = `/publications/health`;
+    const publicationsPublishedFilterFalse = `published=false`;
+    const publicationsPublishedFilterTrue = `published=true`;
+
+    const date = new Date();
+    const year = date.getFullYear();
+    const day = String(date.getDate()).padStart(2, '0'); // Garante que tenha dois dígitos
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Lembre-se que os meses são indexados de 0 a 11
+    const today = `${year}-${month}-${day}`;
+    const publicationsAfterTodayDate = `after=${new Date(today)}`;
+
+    const publicationsOldDate1 = `1500-05-05`;
+    const publicationsOldDate2 = `1600-05-05`;
+    const publicationsAfterOldDate = `after=${publicationsOldDate1}`;
+    const publicationFutureDate1 = `3050-05-05`;
+    const publicationFutureDate2 = `3100-05-05`;
+    const publicationsAfterFutureDate = `after=${publicationFutureDate1}`;
+
     describe("/publications integration tests", () => {
         const date = new Date();
-
         const year = date.getFullYear();
         const day = String(date.getDate()).padStart(2, '0'); // Garante que tenha dois dígitos
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Lembre-se que os meses são indexados de 0 a 11
-
         const today = `${year}-${month}-${day}`;
         it("GET /health => should get an alive message from publications", async () => {
             const { status, text } = await request(app.getHttpServer())
-                .get("/publications/health")
+                .get(`${publicationsHealthRoute}`)
             expect(status).toBe(HttpStatus.OK);
             expect(text).toBe("Publications online!")
         });
@@ -1431,12 +1452,12 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(status).toBe(HttpStatus.CREATED);
         });
@@ -1456,11 +1477,11 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1480,11 +1501,11 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1504,8 +1525,8 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id
@@ -1528,8 +1549,8 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1555,7 +1576,7 @@ describe('AppController (e2e)', () => {
             })
 
             const responseNumber = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1564,7 +1585,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1573,7 +1594,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1582,7 +1603,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1591,7 +1612,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1600,7 +1621,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1609,7 +1630,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
@@ -1635,65 +1656,65 @@ describe('AppController (e2e)', () => {
             })
 
             const responseString = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: "newMedia.id",
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: true,
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: false,
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: [],
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: {},
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: undefined,
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: null,
                     postId: newPost.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1715,65 +1736,65 @@ describe('AppController (e2e)', () => {
             })
 
             const responseString = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: "newPost.id",
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: true,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: false,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: [],
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: {},
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: undefined,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .post(`/publications`)
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: null,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -1793,12 +1814,12 @@ describe('AppController (e2e)', () => {
                 }
             })
 
-            const { status, text } = await request(app.getHttpServer())
-                .post(`/publications`)
+            const { status } = await request(app.getHttpServer())
+                .post(`${publicationsRoute}`)
                 .send({
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: "2029-08-21",
+                    date: publicationFutureDate1,
                     strange: null
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
@@ -1823,15 +1844,15 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("2029-05-05")
+                    date: new Date(publicationFutureDate1)
                 }, {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("2029-05-05")
+                    date: new Date(publicationFutureDate1)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/`);
+                .get(`${publicationsRoute}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -1846,7 +1867,7 @@ describe('AppController (e2e)', () => {
 
         it("GET /publucations => should return an empty array when without data; status code 200", async () => {
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/`);
+                .get(`${publicationsRoute}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true);
@@ -1873,7 +1894,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -1883,11 +1904,11 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=true`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -1920,7 +1941,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -1930,11 +1951,11 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=false`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -1967,7 +1988,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -1977,11 +1998,11 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 }]
             })
             const { status } = await request(app.getHttpServer())
-                .get(`/publications/?published=wrongInput`);
+                .get(`${publicationsRoute}?published=wrongInput`);
 
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -2005,12 +2026,12 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2020,18 +2041,18 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?after=27/08/3050`);
+                .get(`${publicationsRoute}?after=27/08/3050`);
 
             console.log("body", body)
 
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
-        it("GET /publucations/?published=wrongInput&after=27/08/3050 => should return status code 400 must be just 'true' or 'false'", async () => {
+        it("GET /publucations/?published=wrongInput&after=27/08/3050 => should return status code 400 published must be just 'true' or 'false' and after must be YYYY-MM-DD", async () => {
             const newMedia = await prisma.media.create({
                 data: {
                     title: "string title",
@@ -2050,11 +2071,11 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 }, {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2064,11 +2085,11 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 }]
             })
             const { status } = await request(app.getHttpServer())
-                .get(`/publications/?published=wrongInput&after=27/08/3050`);
+                .get(`${publicationsRoute}?published=wrongInput&after=27/08/3050`);
 
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -2092,7 +2113,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2102,16 +2123,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?after=1550-05-05`);
+                .get(`${publicationsRoute}?${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2144,7 +2165,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2154,16 +2175,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?after=${new Date(today)}`);
+                .get(`${publicationsRoute}?${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2196,12 +2217,12 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2211,16 +2232,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?after=3050-05-05`);
+                .get(`${publicationsRoute}?${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2253,7 +2274,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2263,16 +2284,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=true&after=1550-05-05`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2306,7 +2327,7 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2316,16 +2337,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=true&after=${new Date(today)}`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2358,7 +2379,12 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
+                },
+                {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(publicationFutureDate2)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2368,16 +2394,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=true&after=2500-08-27`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2410,12 +2436,12 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2425,16 +2451,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=false&after=1550-05-05`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2467,11 +2493,11 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 }, {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2481,16 +2507,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=false&after=${new Date(today)}`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2523,11 +2549,11 @@ describe('AppController (e2e)', () => {
                 data: [{
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 }, {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-05-05")
+                    date: new Date(publicationFutureDate1)
                 },
                 {
                     mediaId: newMedia.id,
@@ -2537,16 +2563,16 @@ describe('AppController (e2e)', () => {
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1500-05-05")
+                    date: new Date(publicationsOldDate1)
                 },
                 {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("1600-05-05")
+                    date: new Date(publicationsOldDate2)
                 }]
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/?published=false&after=3050-05-05`);
+                .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Array.isArray(body)).toBe(true)
@@ -2579,11 +2605,11 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 }
             })
             const { status } = await request(app.getHttpServer())
-                .get(`/publications/${newPublication.id + 10}`);
+                .get(`${publicationsRoute}${newPublication.id + 10}`);
 
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
@@ -2607,11 +2633,11 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3100-05-05")
+                    date: new Date(publicationFutureDate2)
                 }
             })
             const { status, body } = await request(app.getHttpServer())
-                .get(`/publications/${newPublication.id}`);
+                .get(`${publicationsRoute}${newPublication.id}`);
 
             expect(status).toBe(HttpStatus.OK);
             expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
@@ -2652,12 +2678,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -2699,12 +2725,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -2746,12 +2772,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id + 10,
                     postId: newPost2.id,
@@ -2793,12 +2819,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id + 10,
@@ -2840,12 +2866,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id + 10}`)
+                .patch(`${publicationsRoute}${newPublication.id + 10}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -2880,12 +2906,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     postId: newPost2.id,
                     date: newPublication.date.setDate(newPublication.date.getDate() + 10)
@@ -2919,15 +2945,15 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -2965,12 +2991,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id
@@ -3011,12 +3037,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3059,12 +3085,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const responseNumber = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3073,7 +3099,7 @@ describe('AppController (e2e)', () => {
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3082,7 +3108,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3091,7 +3117,7 @@ describe('AppController (e2e)', () => {
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3100,7 +3126,7 @@ describe('AppController (e2e)', () => {
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3109,7 +3135,7 @@ describe('AppController (e2e)', () => {
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3118,7 +3144,7 @@ describe('AppController (e2e)', () => {
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
@@ -3153,70 +3179,70 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const responseString = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: "newMedia.id",
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: true,
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: false,
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: [],
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: {},
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: undefined,
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: null,
                     postId: newPost2.id,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -3248,70 +3274,70 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const responseString = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: "newPost.id",
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseString.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanTrue = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: true,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseBooleanFalse = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: false,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseArray = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: [],
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseObject = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: {},
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseUndefined = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: undefined,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
             const responseNull = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: null,
-                    date: "2029-08-21"
+                    date: publicationFutureDate1
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
@@ -3349,16 +3375,16 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia1.id,
                     postId: newPost1.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .patch(`/publications/${newPublication.id}`)
+                .patch(`${publicationsRoute}${newPublication.id}`)
                 .send({
                     mediaId: newMedia2.id,
                     postId: newPost2.id,
-                    date: "2029-08-21",
+                    date: publicationFutureDate1,
                     strange: "loucura"
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
@@ -3383,12 +3409,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/publications/${newPublication.id}`);
+                .delete(`${publicationsRoute}${newPublication.id}`);
             expect(status).toBe(HttpStatus.OK)
         });
 
@@ -3411,12 +3437,12 @@ describe('AppController (e2e)', () => {
                 data: {
                     mediaId: newMedia.id,
                     postId: newPost.id,
-                    date: new Date("3000-08-08")
+                    date: new Date(publicationFutureDate1)
                 }
             })
 
             const { status } = await request(app.getHttpServer())
-                .delete(`/publications/${newPublication.id + 10}`);
+                .delete(`${publicationsRoute}${newPublication.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND)
         });
     });
