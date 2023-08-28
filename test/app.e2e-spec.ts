@@ -6,6 +6,7 @@ import { describe } from 'node:test';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MediaFactory } from './factories/medias.factory';
 import { PostFactory } from './factories/posts.factory';
+import { PublicationFactory } from './factories/publications.factory';
 
 let app: INestApplication;
 let prisma: PrismaService;
@@ -622,15 +623,10 @@ describe('AppController (e2e)', () => {
         it("DELETE /media/:id => should return 403 Forbidden media attachet to a published publication", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            await prisma.publication.create({
-                data: {
-                    mediaId: newMedia.id,
-                    postId: newPost.id,
-                    date: new Date(publicationFutureDate1)
-                }
-            })
+            await new PublicationFactory(newMedia.id, newPost.id, new Date(publicationFutureDate1))
+                .buildPublicationDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .delete(`${mediasRoute}${newMedia.id}`);
@@ -641,15 +637,10 @@ describe('AppController (e2e)', () => {
         it("DELETE /media/:id => should return 403 Forbidden media attachet to a future publication", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            await prisma.publication.create({
-                data: {
-                    mediaId: newMedia.id,
-                    postId: newPost.id,
-                    date: new Date(publicationFutureDate1)
-                }
-            })
+            await new PublicationFactory(newMedia.id, newPost.id, new Date(publicationFutureDate1))
+                .buildPublicationDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .delete(`${mediasRoute}${newMedia.id}`);
@@ -669,35 +660,48 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should create a post data without image; status code 200", async () => {
-            const postBody = {
-                title: "string title",
-                text: "string text"
-            }
+            const postBody = await new PostFactory().buildPostWOImageFaker();
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send(postBody);
+
+            const postExists = await prisma.post.findFirst({
+                where: postBody
+            })
             expect(status).toBe(HttpStatus.CREATED);
+            expect(postExists).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    ...postBody
+                })
+            )
         });
 
         it("POST /posts => should create a post data with image; status code 200", async () => {
-            const postBody = {
-                title: "string title",
-                text: "string text",
-                image: "https://picsum.photos/200"
-            }
+
+            const postBody = await new PostFactory().buildPostWImageFaker();
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send(postBody);
+
+            const postExists = await prisma.post.findFirst({
+                where: postBody
+            })
+
             expect(status).toBe(HttpStatus.CREATED);
+            expect(postExists).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    ...postExists
+                })
+            )
         });
 
         it("POST /posts => should return status code 400 title missing", async () => {
-            const postBody = {
-                text: "string text",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            delete postBody.title;
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
@@ -706,10 +710,8 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should return status code 400 text missing", async () => {
-            const postBody = {
-                title: "string title",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            delete postBody.text;
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
@@ -718,11 +720,8 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should return status code 400 title empty", async () => {
-            const postBody = {
-                title: "",
-                text: "string text",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.title = "";
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
@@ -731,11 +730,8 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should return status code 400 text empty", async () => {
-            const postBody = {
-                title: "string title",
-                text: "",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.text = "";
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
@@ -744,11 +740,8 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should return status code 400 image must be a URL", async () => {
-            const postBody = {
-                title: "string title",
-                text: "string text",
-                image: ""
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.image = "";
 
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
@@ -757,13 +750,13 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /posts => should return status code 400 title need to be a string", async () => {
-            //const response = await request(app.getHttpServer())
+            const postBody = await new PostFactory().buildPostWImageFaker();
 
             const responseNumber = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
                     title: 0,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -771,7 +764,7 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: true,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -779,7 +772,7 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: false,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -787,7 +780,7 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: [],
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -795,7 +788,7 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: {},
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -803,7 +796,7 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: undefined,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -811,18 +804,18 @@ describe('AppController (e2e)', () => {
                 .post(`${postsRoute}`)
                 .send({
                     title: null,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
 
         it("POST /posts => should return status code 400 text need to be a string", async () => {
-            //const response = await request(app.getHttpServer())
+            const postBody = await new PostFactory().buildPostWImageFaker();
 
             const responseNumber = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: 0
                 });
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
@@ -830,7 +823,7 @@ describe('AppController (e2e)', () => {
             const responseBooleanTrue = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: true
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
@@ -838,7 +831,7 @@ describe('AppController (e2e)', () => {
             const responseBooleanFalse = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: false
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
@@ -846,7 +839,7 @@ describe('AppController (e2e)', () => {
             const responseArray = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: []
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
@@ -854,7 +847,7 @@ describe('AppController (e2e)', () => {
             const responseObject = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: {}
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
@@ -862,7 +855,7 @@ describe('AppController (e2e)', () => {
             const responseUndefined = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: undefined
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
@@ -870,66 +863,49 @@ describe('AppController (e2e)', () => {
             const responseNull = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: null
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
 
         it("POST /posts => should return status code 400 strange keys in body object", async () => {
-            //const response = await request(app.getHttpServer())
+            const postBody = await new PostFactory().buildPostWImageFaker();
+
             const { status } = await request(app.getHttpServer())
                 .post(`${postsRoute}`)
                 .send({
-                    title: "string title",
-                    text: "string username",
+                    title: postBody.title,
+                    text: postBody.text,
                     strangeArgument
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
         it("GET /posts => should return an array post data when with data; status code 200", async () => {
-            prisma.post.createMany({
-                data: [
-                    {
-                        title: "Instagram",
-                        text: "myusername",
-                    },
-                    {
-                        title: "Twitter",
-                        text: "myusername",
-                        image: "https://picsum.photos/200"
-                    },
-                ],
-            })
+            await new PostFactory().buildPostWImageManyDBFaker(prisma)
 
             const { status, body } = await request(app.getHttpServer())
                 .get(`${postsRoute}`);
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true);
-            for (const posts of body) {
-                const logicWithImage = posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && posts.hasOwnProperty('image');
-                const logicWithoutImage = posts.hasOwnProperty('id') && posts.hasOwnProperty('title') && posts.hasOwnProperty('text') && !posts.hasOwnProperty('image');
-                expect(logicWithImage || logicWithoutImage).toBe(true);
-            }
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(2)
         });
 
         it("GET /posts => should return an empty array when without data; status code 200", async () => {
             const { status, body } = await request(app.getHttpServer())
                 .get(`${postsRoute}`);
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true);
-            expect(body.length).toBe(0)
-
+            expect(body).toEqual(
+                expect.arrayContaining([])
+            );
+            expect(body).toHaveLength(0)
         });
 
         it("GET /posts/:id => should return status code 404 when post by id not found", async () => {
-            await prisma.post.create({
-                data: {
-                    title: "Instagram",
-                    text: "myusername",
-                }
-            })
+            await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const lastPostInDB = await prisma.post.findFirst({
                 select: {
@@ -946,60 +922,68 @@ describe('AppController (e2e)', () => {
         });
 
         it("GET /posts/:id => should return status an object with post by id", async () => {
-
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status, body } = await request(app.getHttpServer())
                 .get(`${postsRoute}${newPost.id}`);
+
             expect(status).toBe(HttpStatus.OK);
-            expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
-            const logicWithImage = newPost.hasOwnProperty('id') && newPost.hasOwnProperty('title') && newPost.hasOwnProperty('text') && newPost.hasOwnProperty('image');
-            const logicWithoutImage = newPost.hasOwnProperty('id') && newPost.hasOwnProperty('title') && newPost.hasOwnProperty('text') && !newPost.hasOwnProperty('image');
-
-            expect(logicWithImage || logicWithoutImage).toBe(true);
-
-            expect(!!newPost.id ? Object.keys(newPost).length === 4 : Object.keys(newPost).length === 3).toBe(true);
+            expect(body).toEqual(
+                expect.objectContaining(
+                    body
+                )
+            )
         });
 
-        it("PUT /posts/:id => should create a post data without image; status code 200", async () => {
+        it("PUT /posts/:id => should update a post data without image; status code 200", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "s",
-                text: "ss"
-            }
+            const updatePostData = await new PostFactory().buildPostWOImageFaker();
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
-                .send(postBody);
+                .send(updatePostData);
+
+            const updatedPost = await prisma.post.findFirst({
+                where: updatePostData
+            })
+
             expect(status).toBe(HttpStatus.OK);
+            expect(updatedPost).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    ...updatePostData
+                })
+            )
         });
 
-        it("PUT /posts/:id => should create a post data with image; status code 200", async () => {
+        it("PUT /posts/:id => should update a post data with image; status code 200", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "string title",
-                text: "string text",
-                image: "https://picsum.photos/269"
-            }
+            const updatePostData = await new PostFactory().buildPostWImageFaker();
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
-                .send(postBody);
+                .send(updatePostData);
+
+            const updatedPost = await prisma.post.findFirst({
+                where: updatePostData
+            })
+
             expect(status).toBe(HttpStatus.OK);
+            expect(updatedPost).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    ...updatePostData
+                })
+            )
         });
 
         it("PUT /posts/:id => should return status code 400 title missing", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                text: "string text",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            delete postBody.title;
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
@@ -1008,13 +992,10 @@ describe('AppController (e2e)', () => {
         });
 
         it("PUT /posts/:id => should return status code 400 text missing", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "string title",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            delete postBody.text;
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
@@ -1023,14 +1004,10 @@ describe('AppController (e2e)', () => {
         });
 
         it("PUT /posts/:id => should return status code 400 title empty", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "",
-                text: "string text",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.title = "";
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost}`)
@@ -1039,14 +1016,10 @@ describe('AppController (e2e)', () => {
         });
 
         it("PUT /posts/:id => should return status code 400 text empty", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "string title",
-                text: "",
-                image: "https://picsum.photos/200"
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.text = "";
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
@@ -1055,14 +1028,10 @@ describe('AppController (e2e)', () => {
         });
 
         it("PUT /posts/:id => should return status code 400 image must be a URL", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
-
-            const postBody = {
-                title: "string title",
-                text: "string text",
-                image: ""
-            }
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody.image = "";
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
@@ -1071,14 +1040,15 @@ describe('AppController (e2e)', () => {
         });
 
         it("PUT /posts/:id => should return status code 400 title need to be a string", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const postBody = await new PostFactory().buildPostWImageFaker();
 
             const responseNumber = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: 0,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1086,7 +1056,7 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: true,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1094,7 +1064,7 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: false,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1102,7 +1072,7 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: [],
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1110,7 +1080,7 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: {},
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1118,7 +1088,7 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: undefined,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
 
@@ -1126,19 +1096,20 @@ describe('AppController (e2e)', () => {
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
                     title: null,
-                    text: "string username"
+                    text: postBody.text
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
         });
 
         it("PUT /posts/:id => should return status code 400 text need to be a string", async () => {
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const postBody = await new PostFactory().buildPostWImageFaker();
 
             const responseNumber = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: 0
                 });
             expect(responseNumber.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1146,7 +1117,7 @@ describe('AppController (e2e)', () => {
             const responseBooleanTrue = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: true
                 });
             expect(responseBooleanTrue.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1154,7 +1125,7 @@ describe('AppController (e2e)', () => {
             const responseBooleanFalse = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: false
                 });
             expect(responseBooleanFalse.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1162,7 +1133,7 @@ describe('AppController (e2e)', () => {
             const responseArray = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: []
                 });
             expect(responseArray.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1170,7 +1141,7 @@ describe('AppController (e2e)', () => {
             const responseObject = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: {}
                 });
             expect(responseObject.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1178,7 +1149,7 @@ describe('AppController (e2e)', () => {
             const responseUndefined = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: undefined
                 });
             expect(responseUndefined.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1186,7 +1157,7 @@ describe('AppController (e2e)', () => {
             const responseNull = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string username",
+                    title: postBody.title,
                     text: null
                 });
             expect(responseNull.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1194,54 +1165,58 @@ describe('AppController (e2e)', () => {
 
         it("PUT /posts/:id => should return status code 400 strange keys in body object", async () => {
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
+
+            const postBody = await new PostFactory().buildPostWImageFaker();
+            postBody["strangeArgument"] = "strangeArgument";
 
             const { status } = await request(app.getHttpServer())
                 .patch(`${postsRoute}${newPost.id}`)
                 .send({
-                    title: "string title",
-                    text: "string username",
+                    postBody,
                     strangeArgument
                 });
             expect(status).toBe(HttpStatus.BAD_REQUEST);
         });
 
         it("DELETE /posts/:id => should delete id post data; status code 200", async () => {
-
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .delete(`${postsRoute}${newPost.id}`);
-            expect(status).toBe(HttpStatus.OK);
 
             const postExists = await prisma.post.findFirst({
                 where: { id: newPost.id }
             })
+            expect(status).toBe(HttpStatus.OK);
             expect(postExists).toBe(null);
         });
 
         it("DELETE /posts/:id => should return 404 not found post", async () => {
+            await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const lastPostInDB = await prisma.post.findFirst({
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    id: 'desc'
+                }
+            });
 
             const { status } = await request(app.getHttpServer())
-                .delete(`${postsRoute}${newPost.id + 10}`);
+                .delete(`${postsRoute}${lastPostInDB.id + 10}`);
             expect(status).toBe(HttpStatus.NOT_FOUND);
         });
 
         it("DELETE /posts/:id => should return 403 Forbidden post attachet to a published publication", async () => {
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            await prisma.publication.create({
-                data: {
-                    postId: newPost.id,
-                    mediaId: newMedia.id,
-                    date: new Date("2000-05-05")
-                }
-            })
+            await new PublicationFactory(newMedia.id, newPost.id, new Date(publicationsOldDate1))
+                .buildPublicationDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .delete(`${postsRoute}${newPost.id}`)
@@ -1251,7 +1226,7 @@ describe('AppController (e2e)', () => {
 
         it("DELETE /posts/:id => should return 403 Forbidden post attachet to a future publication", async () => {
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
@@ -1262,6 +1237,8 @@ describe('AppController (e2e)', () => {
                     date: new Date("2050-05-05")
                 }
             })
+            await new PublicationFactory(newMedia.id, newPost.id, new Date(publicationFutureDate1))
+                .buildPublicationDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .delete(`${postsRoute}${newPost.id}`)
@@ -1306,7 +1283,7 @@ describe('AppController (e2e)', () => {
 
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1322,7 +1299,7 @@ describe('AppController (e2e)', () => {
 
             await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1355,7 +1332,7 @@ describe('AppController (e2e)', () => {
         it("POST /publications => should return status code 400 date missing", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1369,7 +1346,7 @@ describe('AppController (e2e)', () => {
         it("POST /publications => should return status code 400 date empty", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1385,7 +1362,7 @@ describe('AppController (e2e)', () => {
             //const response = await request(app.getHttpServer())
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const responseNumber = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1455,7 +1432,7 @@ describe('AppController (e2e)', () => {
 
             await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const responseString = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1599,7 +1576,7 @@ describe('AppController (e2e)', () => {
         it("POST /publications => should return status code 400 strange keys in body object", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1615,7 +1592,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations => should return an array post data when with data without filters; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1654,7 +1631,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?published=true => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1691,7 +1668,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?published=false => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1728,7 +1705,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?published=wrongInput => should return status code 400 must be just 'true' or 'false'", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1756,7 +1733,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?after=27/08/3050 => should return status code 400 must be YYYY-MM-DD", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1789,7 +1766,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?published=wrongInput&after=27/08/3050 => should return status code 400 published must be just 'true' or 'false' and after must be YYYY-MM-DD", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1821,7 +1798,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?after=oldDate => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1863,7 +1840,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?after=today => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1905,7 +1882,7 @@ describe('AppController (e2e)', () => {
         it("GET /publucations/?after=future => should return an array publucation data when with data; status code 200", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1952,7 +1929,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publucations/?published=true&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -1995,7 +1972,7 @@ describe('AppController (e2e)', () => {
 
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -2037,7 +2014,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publucations/?published=true&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -2084,7 +2061,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publucations/?published=false&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -2131,7 +2108,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publucations/?published=false&after=today => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -2177,7 +2154,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publucations/?published=false&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             await prisma.publication.createMany({
                 data: [{
@@ -2223,7 +2200,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publications/:id => should return status code 404 when publucation by id not found`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2241,7 +2218,7 @@ describe('AppController (e2e)', () => {
         it(`GET /publications/:id => should return an object by id when publication found`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2264,9 +2241,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2291,9 +2268,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2318,9 +2295,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2345,9 +2322,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2372,9 +2349,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2397,9 +2374,9 @@ describe('AppController (e2e)', () => {
         it("PUT /publications/:id => should return status code 400 mediaId missing", async () => {
             const newMedia1 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2421,7 +2398,7 @@ describe('AppController (e2e)', () => {
         it("PUT /publications/:id => should return status code 400 postId missing", async () => {
             const newMedia1 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
@@ -2447,9 +2424,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2473,9 +2450,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2501,9 +2478,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2580,9 +2557,9 @@ describe('AppController (e2e)', () => {
         it("PUT /publications/:id/ => should return status code 400 mediaId need to be a number", async () => {
             const newMedia1 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2662,7 +2639,7 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2741,9 +2718,9 @@ describe('AppController (e2e)', () => {
 
             const newMedia2 = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost1 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost1 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
-            const newPost2 = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost2 = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2767,7 +2744,7 @@ describe('AppController (e2e)', () => {
         it(`DELETE /publications/:id => should delete a publucation data by id`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {
@@ -2785,7 +2762,7 @@ describe('AppController (e2e)', () => {
         it(`DELETE /publications/:id => should return status code 404 when publication by id not found`, async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
 
-            const newPost = await new PostFactory().buildPostDBFaker(prisma);
+            const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
 
             const newPublication = await prisma.publication.create({
                 data: {

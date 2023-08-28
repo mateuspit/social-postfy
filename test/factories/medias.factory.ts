@@ -9,7 +9,6 @@ export class MediaFactory {
         this.username = username;
     }
 
-    //
     async buildMediaDBFaker(prisma: PrismaService) {
         return await prisma.media.create({
             data: {
