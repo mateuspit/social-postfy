@@ -1292,11 +1292,27 @@ describe('AppController (e2e)', () => {
                     postId: newPost.id,
                     date: publicationFutureDate1
                 });
+
+            const publicationExist = await prisma.publication.findFirst({
+                where: {
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(publicationFutureDate1)
+                }
+            })
+
+            expect(publicationExist).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    mediaId: newMedia.id,
+                    postId: newPost.id,
+                    date: new Date(publicationFutureDate1)
+                })
+            )
             expect(status).toBe(HttpStatus.CREATED);
         });
 
         it("POST /publications => should return status code 400 mediaId missing", async () => {
-
             await new MediaFactory().buildMediaDBFaker(prisma);
 
             const newPost = await new PostFactory().buildPostWImageDBFaker(prisma);
@@ -1312,13 +1328,6 @@ describe('AppController (e2e)', () => {
 
         it("POST /publications => should return status code 400 postId missing", async () => {
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
-
-            await prisma.post.create({
-                data: {
-                    title: "string title",
-                    text: "string text"
-                }
-            })
 
             const { status } = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1499,15 +1508,7 @@ describe('AppController (e2e)', () => {
         });
 
         it("POST /publications/ => should return status code 400 postId need to be a number", async () => {
-            //const response = await request(app.getHttpServer())
             const newMedia = await new MediaFactory().buildMediaDBFaker(prisma);
-
-            await prisma.post.create({
-                data: {
-                    title: "string title",
-                    text: "string text"
-                }
-            })
 
             const responseString = await request(app.getHttpServer())
                 .post(`${publicationsRoute}`)
@@ -1609,14 +1610,9 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
         });
 
         it("GET /publucations => should return an empty array when without data; status code 200", async () => {
@@ -1624,8 +1620,7 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true);
-            expect(body.length === 0).toBe(true);
+            expect(body).toEqual([]);
         });
 
         it("GET /publucations/?published=true => should return an array publucation data when with data; status code 200", async () => {
@@ -1654,15 +1649,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 2).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(2);
         });
 
         it("GET /publucations/?published=false => should return an array publucation data when with data; status code 200", async () => {
@@ -1691,15 +1681,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 1).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(1);
         });
 
         it("GET /publucations/?published=wrongInput => should return status code 400 must be just 'true' or 'false'", async () => {
@@ -1757,7 +1742,7 @@ describe('AppController (e2e)', () => {
                     date: new Date(publicationsOldDate1)
                 }]
             })
-            const { status, body } = await request(app.getHttpServer())
+            const { status } = await request(app.getHttpServer())
                 .get(`${publicationsRoute}?after=27/08/3050`);
 
             expect(status).toBe(HttpStatus.BAD_REQUEST);
@@ -1826,15 +1811,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 3).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(3);
         });
 
         it("GET /publucations/?after=today => should return an array publucation data when with data; status code 200", async () => {
@@ -1868,15 +1848,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 1).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(1);
         });
 
         it("GET /publucations/?after=future => should return an array publucation data when with data; status code 200", async () => {
@@ -1915,15 +1890,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 1).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(1);
         });
 
         it(`GET /publucations/?published=true&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -1957,15 +1927,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 2).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(2);
         });
 
         it(`GET /publucations/?published=true&after=today => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -2000,15 +1965,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 0).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(0);
         });
 
         it(`GET /publucations/?published=true&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -2047,15 +2007,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterTrue}&${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 0).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(0);
         });
 
         it(`GET /publucations/?published=false&after=oldDate => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -2094,15 +2049,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterOldDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 2).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(2);
         });
 
         it(`GET /publucations/?published=false&after=today => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -2140,15 +2090,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterTodayDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 2).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(2);
         });
 
         it(`GET /publucations/?published=false&after=future => should return an array publucation data when with data with filter; status code 200`, async () => {
@@ -2186,15 +2131,10 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}?${publicationsPublishedFilterFalse}&${publicationsAfterFutureDate}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Array.isArray(body)).toBe(true)
-            for (const publication of body) {
-                expect(publication.hasOwnProperty('id') &&
-                    publication.hasOwnProperty('mediaId') &&
-                    publication.hasOwnProperty('postId') &&
-                    publication.hasOwnProperty('date'))
-                    .toBe(true);
-            }
-            expect(body.length === 1).toBe(true);
+            expect(body).toEqual(
+                expect.arrayContaining(body)
+            );
+            expect(body).toHaveLength(1);
         });
 
         it(`GET /publications/:id => should return status code 404 when publucation by id not found`, async () => {
@@ -2231,9 +2171,6 @@ describe('AppController (e2e)', () => {
                 .get(`${publicationsRoute}${newPublication.id}`);
 
             expect(status).toBe(HttpStatus.OK);
-            expect(Object.prototype.toString.call(body) === '[object Object]').toBe(true);
-            expect(Object.keys(body).length === 4).toBe(true);
-            expect(body.hasOwnProperty('id') && body.hasOwnProperty('mediaId') && body.hasOwnProperty('postId') && body.hasOwnProperty('date')).toBe(true)
         });
 
         it("PUT /publications/:id => should update a publication data by id; status code 200", async () => {
@@ -2260,7 +2197,20 @@ describe('AppController (e2e)', () => {
                     postId: newPost2.id,
                     date: new Date(newPublication.date.setDate(newPublication.date.getDate() + 10))
                 });
+
+            const updatedPublication = await prisma.publication.findFirst({
+                where: { id: newPublication.id }
+            })
+
             expect(status).toBe(HttpStatus.OK);
+            expect(updatedPublication).toEqual(
+                expect.objectContaining({
+                    id: newPublication.id,
+                    mediaId: newMedia2.id,
+                    postId: newPost2.id,
+                    date: updatedPublication.date
+                })
+            );
         });
 
         it("PUT /publications/:id => should return status code 403 publication published", async () => {
@@ -2777,8 +2727,4 @@ describe('AppController (e2e)', () => {
             expect(status).toBe(HttpStatus.NOT_FOUND)
         });
     });
-
-
-
-
 });
